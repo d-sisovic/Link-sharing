@@ -1,8 +1,11 @@
+@use "./vars" as vars;
+
 *,
 ::after,
 ::before {
     margin: 0px;
     padding: 0px;
+    line-height: 150%;
     box-sizing: border-box;
 }
 
@@ -12,7 +15,13 @@ html {
 
 body {
     font-size: 1.6rem;
+    color: vars.$dark-grey;
     font-family: "Instrument-Sans";
+    font-weight: vars.$regular-weight;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: vars.$regular-weight;
 }
 
 img {

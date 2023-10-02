@@ -1,12 +1,12 @@
 import './App.scss'
 
 const App = () => {
-
   return (
     <>
-     <p>ahhaha</p>
+    221
     </>
   )
 }
 
-export default App
+export default App;
+

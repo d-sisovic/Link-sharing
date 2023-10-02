@@ -1,0 +1,15 @@
+@use "./vars" as vars;
+
+.title {
+    font-size: 2.4rem;
+    color: vars.$black;
+    margin-bottom: 0.8rem;
+    font-weight: vars.$bold-weight;
+    font-family: "Instrument-Sans-Bold";
+}
+
+.subtitle {
+    font-size: 1.6rem;
+    margin-bottom: 4rem;
+    color: vars.$dark-grey;
+}

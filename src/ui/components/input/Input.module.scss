@@ -1,0 +1,66 @@
+@use '../../../styles/vars' as vars;
+
+.container {
+    label {
+        display: block;
+        font-size: 1.2rem;
+        color: vars.$black;
+        margin-bottom: 0.4rem;
+    }
+
+    &__input {
+        position: relative;
+
+        &__icon {
+            top: 50%;
+            left: 16px;
+            width: 1.6rem;
+            height: 1.6rem;
+            position: absolute;
+            transform: translateY(-50%);
+        }
+
+        &__error {
+            top: 50%;
+            z-index: 1;
+            right: 16px;
+            color: vars.$red;
+            font-size: 1.2rem;
+            position: absolute;
+            padding-left: 1.2rem;
+            background: vars.$white;
+            transform: translateY(-50%);
+        }
+
+        input {
+            width: 100%;
+            border: none;
+            font-size: 1.6rem;
+            color: vars.$black;
+            border-radius: 0.8rem;
+            background: vars.$white;
+            outline: 1px solid vars.$light-grey;
+            padding: 1.2rem 1.6rem 1.2rem 4.4rem;
+
+            &:placeholder {
+                opacity: 0.5;
+            }
+
+            &:focus {
+                outline-color: vars.$purple;
+                box-shadow: 0px 0px 32px 0px rgba(99, 60, 255, 0.25);
+            }
+        }
+
+        &--error {
+            input {
+                color: vars.$red;
+                outline-color: vars.$red;
+
+                &:focus {
+                    outline-color: vars.$red;
+                }
+            }
+        }
+    }
+}

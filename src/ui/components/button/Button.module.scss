@@ -1,0 +1,21 @@
+@use "../../../styles/vars" as vars;
+
+.button {
+    width: 100%;
+    font-size: 1.6rem;
+    line-height: 150%;
+    border: transparent;
+    color: vars.$white;
+    border-radius: 0.8rem;
+    padding: 1.1rem 2.7rem;
+    background: vars.$purple;
+    font-weight: vars.$button-weight;
+
+    &--disabled {
+        opacity: 0.25;
+    }
+
+    &:active {
+        opacity: 0.5;
+    }
+}
