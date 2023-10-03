@@ -5,6 +5,11 @@
 @use './styles/breakpoint';
 
 #root {
-    padding: 3.2rem;
     min-height: 100vh;
+}
+
+@include breakpoint.mq(tablet) {
+    body {
+        background: vars.$dirty-white;
+    }
 }

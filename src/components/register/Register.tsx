@@ -36,9 +36,9 @@ const Register = () => {
                     <img src={passwordSvg} alt="password" />
                 </Input>
 
-                <Button label="Create new account" disabled={false} clickHandler={onRegister} />
-
                 <p className={styles['info']}>Password must contain at least 8 characters</p>
+
+                <Button label="Create new account" disabled={false} clickHandler={onRegister} />
 
                 <div className={styles['navigate']} onClick={onLoginNavigate}>
                     <p>Already have an account?</p>

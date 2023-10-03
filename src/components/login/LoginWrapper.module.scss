@@ -1,3 +1,34 @@
-.logo {
-    margin-bottom: 6.4rem;
+@use '../../styles/vars';
+@use '../../styles/breakpoint';
+
+.container {
+    padding: 3.2rem;
+
+    .logo {
+        margin-bottom: 6.4rem;
+    }
+}
+
+@include breakpoint.mq(tablet) {
+    .container {
+        display: flex;
+        min-height: 100vh;
+        align-items: center;
+        padding-left: 14.6rem;
+        padding-right: 14.6rem;
+        flex-direction: column;
+        justify-content: center;
+
+        .logo {
+            margin: 0 auto 5.1rem auto;
+        }
+
+        &__children {
+            padding: 4rem;
+            margin: 0 auto;
+            width: 47.6rem;
+            border-radius: 0.8rem;
+            background: vars.$white;
+        }
+    }
 }

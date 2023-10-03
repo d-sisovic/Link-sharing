@@ -13,7 +13,7 @@
 
         &__icon {
             top: 50%;
-            left: 16px;
+            left: 1.6rem;
             width: 1.6rem;
             height: 1.6rem;
             position: absolute;
@@ -23,7 +23,7 @@
         &__error {
             top: 50%;
             z-index: 1;
-            right: 16px;
+            right: 1.6rem;
             color: vars.$red;
             font-size: 1.2rem;
             position: absolute;

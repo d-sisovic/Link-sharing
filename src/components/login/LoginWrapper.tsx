@@ -4,11 +4,13 @@ import logo from "../../assets/images/logo-devlinks-large.svg";
 
 const LoginWrapper = ({ children }: IBaseProp) => {
   return (
-    <>
+    <div className={styles['container']}>
       <img src={logo} alt="logo" className={styles['logo']} />
 
-      {children}
-    </>
+      <div className={styles['container__children']}>
+        {children}
+      </div>
+    </div>
   );
 }
 
