@@ -7,7 +7,9 @@ const Button = ({ disabled = false, label, clickHandler }: IButton) => {
       event.preventDefault();
 
       clickHandler();
-    }} disabled={disabled}>{label}</button>
+    }} disabled={disabled}>
+      {label}
+    </button>
 }
 
 export default Button;

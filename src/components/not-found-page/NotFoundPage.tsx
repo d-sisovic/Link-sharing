@@ -13,7 +13,7 @@ const NotFoundPage = () => {
       <h1 className="title">Page not found</h1>
       <h3 className="subtitle">The page you requested is not found. Please check URL and try again.</h3>
 
-      <Button label="Go back" clickHandler={onGoBack} />
+      <Button disabled={false} label="Go back" clickHandler={onGoBack} />
     </div>
   </LoginWrapper>;
 }
