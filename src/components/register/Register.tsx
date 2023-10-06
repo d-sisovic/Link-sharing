@@ -1,5 +1,6 @@
 import { useState } from "react";
 import auth from "../../../firebase";
+import { toastrConfig } from "../../util";
 import { useForm } from "react-hook-form";
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,14 @@ import Button from "../../ui/components/button/Button";
 import emailSvg from "../../assets/images/icon-email.svg";
 import passwordSvg from "../../assets/images/icon-password.svg";
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
+
+const passwordValidationSchema = {
+    required: "Password is required",
+    pattern: {
+        value: /\S{8,}/,
+        message: "Password must contain 8 or more characters"
+    }
+};
 
 const emailAsyncValidator = async (email: string) => {
     const emailInUse = "Email already in use";
@@ -42,16 +51,7 @@ const Register = () => {
             onLoginNavigate(true);
         } catch (error) {
             setIsPending(false);
-            toast.error('Error creating account. Please try again!', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-            });
+            toast.error('Error creating account. Please try again!', toastrConfig);
         }
     };
 
@@ -74,7 +74,7 @@ const Register = () => {
                     required: "Email is required",
                     pattern: {
                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Enter valid email address format"
+                        message: "Email must be valid"
                     },
                     validate: emailAsyncValidator
                 }}>
@@ -84,13 +84,7 @@ const Register = () => {
                 <Input type="password" name="password" label="Create password" placeholder="At least 8 characters"
                     errors={errors}
                     register={register}
-                    validationSchema={{
-                        required: "Password is required",
-                        pattern: {
-                            value: /\S{8,}/,
-                            message: "Password must contain 8 or more characters"
-                        }
-                    }}>
+                    validationSchema={passwordValidationSchema}>
                     <img src={passwordSvg} alt="password" />
                 </Input>
 
@@ -98,12 +92,8 @@ const Register = () => {
                     errors={errors}
                     register={register}
                     validationSchema={{
-                        required: "Password is required",
-                        validate: (value: string) => value !== getValues().password ? "Passwords must match" : null,
-                        pattern: {
-                            value: /\S{8,}/,
-                            message: "Password must contain 8 or more characters"
-                        }
+                        ...passwordValidationSchema,
+                        validate: (value: string) => value !== getValues().password ? "Passwords must match" : null
                     }}>
                     <img src={passwordSvg} alt="password" />
                 </Input>

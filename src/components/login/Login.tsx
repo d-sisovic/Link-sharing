@@ -1,5 +1,6 @@
 import auth from "../../../firebase";
 import styles from "./Login.module.scss";
+import { toastrConfig } from "../../util";
 import { useForm } from "react-hook-form";
 import LoginWrapper from "./LoginWrapper";
 import 'react-toastify/dist/ReactToastify.css';
@@ -34,16 +35,7 @@ const Login = () => {
       // onNavigate(Routes.HOME);
     } catch (error) {
       setIsPending(false);
-      toast.error('Error logging in. Please try again!', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+      toast.error('Error logging in. Please try again!', toastrConfig);
     }
   };
 
@@ -52,16 +44,7 @@ const Login = () => {
 
     initialized.current = true;
 
-    toast.success('Account successfully created. Please login!', {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-    });
+    toast.success('Account successfully created. Please login!', toastrConfig);
 
     setSearchParams('');
   }, [toastValue, setSearchParams]);
@@ -82,7 +65,7 @@ const Login = () => {
             required: "Email is required",
             pattern: {
               value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Enter valid email address format"
+              message: "Email must be valid"
             }
           }}>
           <img src={emailSvg} alt="email" />
