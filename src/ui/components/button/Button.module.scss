@@ -17,6 +17,12 @@
         cursor: default;
     }
 
+    &--outline {
+        color: vars.$purple;
+        background: vars.$white;
+        outline: 1px solid vars.$purple;
+    }
+
     &:active {
         opacity: 0.5;
     }

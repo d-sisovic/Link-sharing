@@ -20,7 +20,7 @@ const Login = () => {
 
   const initialized = useRef(false);
   const toastValue = searchParams.get('toast');
-  const [isPending, setIsPending] = useState(false);
+  const [isPending, setIsPending] = useState<boolean>(false);
   const { register, getValues, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
 
   const onLogin = async () => {
@@ -30,9 +30,9 @@ const Login = () => {
     const [email, password] = getValues(['email', 'password']);
 
     try {
-      const data = await signInWithEmailAndPassword(auth, email, password);
-      console.log(data);
-      // onNavigate(Routes.HOME);
+      await signInWithEmailAndPassword(auth, email, password);
+
+      onNavigate(Routes.HOME);
     } catch (error) {
       setIsPending(false);
       toast.error('Error logging in. Please try again!', toastrConfig);
@@ -62,10 +62,10 @@ const Login = () => {
       <form className={styles['container']}>
         <Input name="email" type="email" label="Email address" placeholder="e.g. alex@email.com"
           register={register} errors={errors} validationSchema={{
-            required: "Email is required",
+            required: "Required",
             pattern: {
               value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Email must be valid"
+              message: "Must be valid"
             }
           }}>
           <img src={emailSvg} alt="email" />
@@ -75,12 +75,12 @@ const Login = () => {
           errors={errors}
           register={register}
           validationSchema={{
-            required: "Password is required"
+            required: "Required"
           }}>
           <img src={passwordSvg} alt="password" />
         </Input>
 
-        <Button label="Login" disabled={!isValid || isPending} clickHandler={onLogin} />
+        <Button label="Login" outlineMode={false} disabled={!isValid || isPending} clickHandler={onLogin} />
 
         <div className={styles['navigate']} onClick={() => onNavigate(Routes.REGISTER)}>
           <p>Don't have an account?</p>

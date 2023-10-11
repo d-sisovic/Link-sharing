@@ -1,0 +1,53 @@
+@use "../../styles/vars";
+
+.container {
+    min-height: 100vh;
+    background: vars.$dirty-white;
+}
+
+.nav {
+    gap: 0.8rem;
+    display: flex;
+    align-items: center;
+    background: vars.$white;
+    justify-content: space-between;
+    border-bottom-left-radius: 1.2rem;
+    border-bottom-right-radius: 1.2rem;
+    padding: 1.6rem 1.6rem 1.6rem 2.4rem;
+
+    .preview {
+        cursor: pointer;
+        border-radius: 0.8rem;
+        padding: 1.1rem 1.6rem;
+        outline: 1px solid vars.$purple;
+    }
+
+    &__subgrid {
+        gap: 0.8rem;
+        display: flex;
+        align-items: center;
+
+        &__link {
+            cursor: pointer;
+            border-radius: 0.8rem;
+            padding: 1.1rem 2.7rem;
+
+            img {
+                width: 20px;
+                height: 20px;
+            }
+
+            &--active {
+                background: vars.$light-light-purple;
+
+                img {
+                    filter: brightness(0) saturate(100%) invert(23%) sepia(30%) saturate(7219%) hue-rotate(246deg) brightness(102%) contrast(106%);
+                }
+            }
+        }
+    }
+}
+
+.main {
+    padding: 1.6rem;
+}

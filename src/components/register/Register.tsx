@@ -15,10 +15,10 @@ import passwordSvg from "../../assets/images/icon-password.svg";
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
 
 const passwordValidationSchema = {
-    required: "Password is required",
+    required: "Required",
     pattern: {
         value: /\S{8,}/,
-        message: "Password must contain 8 or more characters"
+        message: "Must have 8/more characters"
     }
 };
 
@@ -36,7 +36,7 @@ const emailAsyncValidator = async (email: string) => {
 
 const Register = () => {
     const navigate = useNavigate();
-    const [isPending, setIsPending] = useState(false);
+    const [isPending, setIsPending] = useState<boolean>(false);
     const { register, getValues, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
 
     const onRegister = async () => {
@@ -71,10 +71,10 @@ const Register = () => {
 
             <div className={styles['container']}>
                 <Input type="email" name="email" label="Email address" placeholder="e.g. alex@email.com" register={register} errors={errors} validationSchema={{
-                    required: "Email is required",
+                    required: "Required",
                     pattern: {
                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Email must be valid"
+                        message: "Must be valid"
                     },
                     validate: emailAsyncValidator
                 }}>
@@ -100,7 +100,7 @@ const Register = () => {
 
                 <p className={styles['info']}>Password must contain at least 8 characters</p>
 
-                <Button label="Create new account" disabled={!isValid || isPending} clickHandler={onRegister} />
+                <Button outlineMode={false} label="Create new account" disabled={!isValid || isPending} clickHandler={onRegister} />
 
                 <div className={styles['navigate']} onClick={() => onLoginNavigate()}>
                     <p>Already have an account?</p>

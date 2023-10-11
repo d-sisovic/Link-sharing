@@ -1,0 +1,43 @@
+@use "../../styles/vars";
+
+$gap: 1.2rem;
+
+.card {
+    gap: $gap;
+    width: 100%;
+    display: flex;
+    padding: 2rem;
+    border-radius: 1.2rem;
+    flex-direction: column;
+    background: vars.$dirty-white;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        &__id {
+            gap: 8px;
+            font-size: 1.6rem;
+            align-items: center;
+            display: inline-flex;
+            color: vars.$dark-grey;
+            font-weight: vars.$bold-weight;
+
+            img {
+                width: 1.2rem;
+                height: 0.6rem;
+            }
+        }
+
+        &__remove {
+            cursor: pointer;
+        }
+    }
+
+    &__body {
+        gap: $gap;
+        display: flex;
+        flex-direction: column;
+    }
+}
