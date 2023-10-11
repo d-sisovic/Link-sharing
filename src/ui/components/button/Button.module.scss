@@ -2,6 +2,7 @@
 
 .button {
     width: 100%;
+    cursor: pointer;
     font-size: 1.6rem;
     line-height: 150%;
     border: transparent;
@@ -13,6 +14,13 @@
 
     &--disabled {
         opacity: 0.25;
+        cursor: default;
+    }
+
+    &--outline {
+        color: vars.$purple;
+        background: vars.$white;
+        outline: 1px solid vars.$purple;
     }
 
     &:active {

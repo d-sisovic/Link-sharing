@@ -1,0 +1,7 @@
+@use "../../styles/vars";
+
+.container {
+    border-radius: 0.8rem;
+    background: vars.$white;
+    min-height: calc(100vh - (74px + 3.2rem));
+}

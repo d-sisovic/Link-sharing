@@ -2,6 +2,7 @@
 @use "../../styles/breakpoint";
 
 .navigate {
+    cursor: pointer;
     text-align: center;
 
     &--highlight {
