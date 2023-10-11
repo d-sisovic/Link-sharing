@@ -2,6 +2,7 @@ import LinkList from "./LinkList";
 import LinkIntro from "./LinkIntro";
 import { db } from "../../../firebase";
 import styles from "./LinkWrapper.module.scss";
+import { DropResult } from "@hello-pangea/dnd";
 import { UTIL } from "../../ts/enums/util.enum";
 import { ToastContainer, toast } from "react-toastify";
 import Button from "../../ui/components/button/Button";
@@ -90,10 +91,38 @@ const getUILinksAfterSave = async (formValidity: ILinkWrapperFormValidity[]) => 
     });
 };
 
+const reorder = (links: IFirebaseLink[], startIndex: number, endIndex: number) => {
+    const result = Array.from(links);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+};
+
 const LinkWrapper = () => {
     const [newFirebaseLinks, setNewLinks] = useState<IFirebaseLink[]>([]);
     const [formValidity, setFormValidity] = useState<ILinkWrapperFormValidity[]>([]);
     const [data, setLinks] = useState<{ isLoading: boolean; links: IFirebaseLink[] }>({ isLoading: true, links: [] });
+
+    const onDragEnd = async (result: DropResult) => {
+        if (!result.destination) { return; }
+
+        const links = reorder(data.links, result.source.index, result.destination.index);
+
+        try {
+            await Promise.all(links.map(link => deleteLinkFromDb(link.id)));
+            await Promise.all(links.map(link => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { id, ...rest } = link;
+
+                return addLinkToDb(rest);
+            }));
+
+            setLinks(previousState => ({ ...previousState, links }));
+        } catch (error) {
+            toast.error('Error reordering links. Please try again!', toastrConfig);
+        }
+    };
 
     const onAddLink = () => {
         const usedSavedPlatforms = formValidity.map(item => item.link.platform);
@@ -207,10 +236,10 @@ const LinkWrapper = () => {
 
                 {newFirebaseLinks.length === 0 && !data.isLoading && data.links.length === 0 && <LinkIntro />}
 
-                {newFirebaseLinks.length !== 0 && <LinkList baseIndex={data.links.length} removeLinkHandler={onRemoveLink} formValidity={formValidity}
+                {newFirebaseLinks.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={data.links.length} removeLinkHandler={onRemoveLink} formValidity={formValidity}
                     formValidityHandler={formValidityHandler} links={newFirebaseLinks} />}
 
-                {!data.isLoading && data.links.length !== 0 && <LinkList baseIndex={0} removeLinkHandler={onRemoveLink}
+                {!data.isLoading && data.links.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={0} removeLinkHandler={onRemoveLink}
                     formValidity={formValidity} formValidityHandler={formValidityHandler} links={data.links} />}
             </div>
         </div>

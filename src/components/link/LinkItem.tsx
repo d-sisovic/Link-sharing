@@ -1,5 +1,6 @@
 import styles from "./LinkItem.module.scss";
 import { platformsDropdown } from "../../util";
+import { UTIL } from "../../ts/enums/util.enum";
 import Input from "../../ui/components/input/Input";
 import { useEffect, useState, useMemo } from "react";
 import Select from "../../ui/components/select/Select";
@@ -10,8 +11,9 @@ import { IPlatform } from "../../ts/models/platform.model";
 import { AvailablePlatform } from "../../ts/enums/available-platform.enum";
 import { Control, FieldValues, UseFormRegister, useForm, useWatch } from "react-hook-form";
 
-const LinkItem = ({ index, link, formValidity, removeLinkHandler, formValidityHandler }: ILinkItem) => {
+const LinkItem = ({ index, link, formValidity, dragProps, removeLinkHandler, formValidityHandler }: ILinkItem) => {
     const defaultValues = { platform: link.platform, value: link.value };
+
     const [linkValidationSchema, setLinkValidationSchema] = useState({ required: "Required" });
     const { register, resetField, control, formState: { errors, isValid, isDirty } } = useForm({ mode: 'onChange', defaultValues });
 
@@ -22,14 +24,15 @@ const LinkItem = ({ index, link, formValidity, removeLinkHandler, formValidityHa
     };
 
     const formValues = useWatch({ control });
+    const isNewLink = link.id.startsWith(UTIL.NEW_LINK_ID);
 
     const platforms = useMemo(() => {
         const usedSavedPlatforms = formValidity.map(item => item.link.platform);
         const selectedPlatform = platformsDropdown.find(platform => platform.value === formValues.platform) as IPlatform;
         const unusedPlatforms = platformsDropdown.filter(platform => !usedSavedPlatforms.includes(platform.value));
-        
+
         return [selectedPlatform, ...unusedPlatforms];
-     }, [formValidity, formValues.platform]);
+    }, [formValidity, formValues.platform]);
 
     useEffect(() => {
         const patternValidation = {
@@ -53,12 +56,12 @@ const LinkItem = ({ index, link, formValidity, removeLinkHandler, formValidityHa
         const { platform, value } = formValues;
 
         formValidityHandler([platform, value] as [AvailablePlatform, string], isValid, isDirty, link.id);
-    }, [formValues, isDirty, isValid, link.id, formValidityHandler])
+    }, [formValues, isDirty, isValid, link.id, formValidityHandler]);
 
     return <div className={styles.card}>
         <div className={styles['card__header']}>
-            <p className={styles['card__header__id']}>
-                {link.id && <img src={rectangle} alt="rectangle" className={styles['card__header__id__img']} />}
+            <p className={styles['card__header__id']}  {...dragProps}>
+                {!isNewLink && <img src={rectangle} alt="rectangle" className={styles['card__header__id__img']} />}
                 Link #{index + 1}
             </p>
 
