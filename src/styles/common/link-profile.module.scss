@@ -1,0 +1,38 @@
+@use "../../styles/vars";
+
+.container {
+    padding: 2.4rem;
+}
+
+.title {
+    margin: vars.$gap-between-object 0;
+}
+
+.subtitle {
+    margin-bottom: 2.65rem;
+}
+
+.subcontainer {
+    padding: 2rem;
+    border-radius: 0.8rem;
+    background: vars.$dirty-white;
+    margin-top: vars.$gap-between-object;
+}
+
+.footer {
+    z-index: 1;
+    bottom: 0px;
+    padding: 1.6rem;
+    position: sticky;
+    background: vars.$white;
+
+    &::before {
+        content: "";
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        height: 1px;
+        position: absolute;
+        background: vars.$light-grey;
+    }
+}

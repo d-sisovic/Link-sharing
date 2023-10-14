@@ -1,7 +1,9 @@
 @use "../../styles/vars";
 
-.container {
+.subcontainer {
     display: flex;
     flex-direction: column;
+    padding: 0px !important;
     gap: vars.$gap-between-object;
+    background: transparent !important;
 }

@@ -52,6 +52,10 @@
             }
         }
 
+        .input--iconless {
+            padding-left: 1.6rem;
+        }
+
         &--error {
             input {
                 color: vars.$red;

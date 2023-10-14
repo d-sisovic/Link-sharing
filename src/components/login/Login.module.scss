@@ -16,9 +16,9 @@
 }
 
 .container {
-    gap: 2.4rem;
     display: flex;
     flex-direction: column;
+    gap: vars.$gap-between-object;
 }
 
 @include breakpoint.mq(tablet) {

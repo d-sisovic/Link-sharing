@@ -11,6 +11,7 @@ import Spinner from "../../ui/components/spinner/Spinner";
 import { platformsDropdown, toastrConfig } from "../../util";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { IFirebaseLink } from "../../ts/models/firebase-link.model";
+import commonStyles from "../../styles/common/link-profile.module.scss";
 import { AvailablePlatform } from "../../ts/enums/available-platform.enum";
 import { ILinkWrapperFormValidity } from "./ts/models/link-wrapper-form-validity.model";
 import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
@@ -102,24 +103,24 @@ const reorder = (links: IFirebaseLink[], startIndex: number, endIndex: number) =
 const LinkWrapper = () => {
     const [newFirebaseLinks, setNewLinks] = useState<IFirebaseLink[]>([]);
     const [formValidity, setFormValidity] = useState<ILinkWrapperFormValidity[]>([]);
-    const [data, setLinks] = useState<{ isLoading: boolean; links: IFirebaseLink[] }>({ isLoading: true, links: [] });
+    const [{ isLoading, links }, setLinks] = useState<{ isLoading: boolean; links: IFirebaseLink[] }>({ isLoading: true, links: [] });
 
     const onDragEnd = async (result: DropResult) => {
         if (!result.destination) { return; }
 
-        const links = reorder(data.links, result.source.index, result.destination.index);
+        const reorderedLinks = reorder(links, result.source.index, result.destination.index);
 
         try {
-            await Promise.all(links.map(link => deleteLinkFromDb(link.id)));
-            await Promise.all(links.map(link => {
+            await Promise.all(reorderedLinks.map(link => deleteLinkFromDb(link.id)));
+            await Promise.all(reorderedLinks.map(link => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { id, ...rest } = link;
 
                 return addLinkToDb(rest);
             }));
 
-            setLinks(previousState => ({ ...previousState, links }));
-        } catch (error) {
+            setLinks(previousState => ({ ...previousState, links: reorderedLinks }));
+        } catch {
             toast.error('Error reordering links. Please try again!', toastrConfig);
         }
     };
@@ -140,8 +141,8 @@ const LinkWrapper = () => {
         const formInvalid = getFormValidityValue(formValidity, 'valid').some(value => !value);
         const formUntouched = getFormValidityValue(formValidity, 'dirty').every(value => !value);
 
-        return formInvalid || formUntouched || (!newFirebaseLinks.length && !data.links.length);
-    }, [formValidity, newFirebaseLinks.length, data.links.length]);
+        return formInvalid || formUntouched || (!newFirebaseLinks.length && !links.length);
+    }, [formValidity, newFirebaseLinks.length, links.length]);
 
     const fetchLinks = async () => {
         try {
@@ -149,7 +150,7 @@ const LinkWrapper = () => {
             const links = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as IFirebaseLink[];
 
             setLinks({ isLoading: false, links });
-        } catch (error) {
+        } catch {
             setLinks({ isLoading: false, links: [] });
             toast.error('Error fetching links. Please try again!', toastrConfig);
         }
@@ -189,7 +190,7 @@ const LinkWrapper = () => {
             setLinks(previousState => ({ ...previousState, links: getLinkNotMatchingById(previousState.links, linkId) }));
 
             toast.success('Link successfully deleted.', toastrConfig);
-        } catch (error) {
+        } catch {
             toast.error('Error deleting link. Please try again!', toastrConfig);
         }
     }, []);
@@ -205,17 +206,17 @@ const LinkWrapper = () => {
             setLinks(previousState => ({ isLoading: false, links: getUpdatedLinkForUI(previousState.links, linksUI) }));
 
             toast.success('Link/s successfully created/updated.', toastrConfig);
-        } catch (error) {
+        } catch {
             setLinks(previousState => ({ isLoading: false, links: previousState.links }));
             toast.error('Error adding link. Please try again!', toastrConfig);
         }
     };
 
     useEffect(() => {
-        if (data.isLoading) { return; }
+        if (isLoading) { return; }
 
-        setFormValidity(getInitialFormValidity(data.links));
-    }, [data.isLoading, data.links]);
+        setFormValidity(getInitialFormValidity(links));
+    }, [isLoading, links]);
 
     useEffect(() => {
         fetchLinks();
@@ -224,28 +225,28 @@ const LinkWrapper = () => {
     return <>
         <ToastContainer position="top-right" autoClose={3000} theme="colored" />
 
-        <div className={styles.container}>
+        <div className={commonStyles.container}>
             <h1 className="title">Customize your links</h1>
 
             <h3 className="subtitle">Add/edit/remove links below and then share all your profiles with the world!</h3>
 
-            <Button disabled={platformsDropdown.length === (newFirebaseLinks.length + data.links.length)} label="+ Add new link" outlineMode={true} clickHandler={onAddLink} />
+            <Button disabled={platformsDropdown.length === (newFirebaseLinks.length + links.length)} label="+ Add new link" outlineMode={true} clickHandler={onAddLink} />
 
-            <div className={`${styles.subcontainer} ${!data.isLoading && data.links.length !== 0 ? `${styles['subcontainer--links']}` : ''}`}>
-                {data.isLoading && <Spinner size={4} />}
+            <div className={`${commonStyles.subcontainer} ${!isLoading && links.length !== 0 ? `${styles['subcontainer--links']}` : ''} ${isLoading && `${styles['subcontainer--loader']}`}`}>
+                {isLoading && <Spinner size={4} />}
 
-                {newFirebaseLinks.length === 0 && !data.isLoading && data.links.length === 0 && <LinkIntro />}
+                {newFirebaseLinks.length === 0 && !isLoading && links.length === 0 && <LinkIntro />}
 
-                {newFirebaseLinks.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={data.links.length} removeLinkHandler={onRemoveLink} formValidity={formValidity}
+                {newFirebaseLinks.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={links.length} removeLinkHandler={onRemoveLink} formValidity={formValidity}
                     formValidityHandler={formValidityHandler} links={newFirebaseLinks} />}
 
-                {!data.isLoading && data.links.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={0} removeLinkHandler={onRemoveLink}
-                    formValidity={formValidity} formValidityHandler={formValidityHandler} links={data.links} />}
+                {!isLoading && links.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={0} removeLinkHandler={onRemoveLink}
+                    formValidity={formValidity} formValidityHandler={formValidityHandler} links={links} />}
             </div>
         </div>
 
-        <div className={styles.footer}>
-            <Button disabled={formDisabled} label="Save" outlineMode={false} clickHandler={onSaveForm} />
+        <div className={commonStyles.footer}>
+            <Button disabled={formDisabled} label="Save" clickHandler={onSaveForm} />
         </div>
     </>;
 }

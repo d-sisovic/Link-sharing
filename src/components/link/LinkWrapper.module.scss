@@ -1,51 +1,17 @@
 @use "../../styles/vars";
 
-.container {
-    padding: 2.4rem;
-}
-
-.title {
-    margin: 2.4rem 0;
-}
-
-.subtitle {
-    margin-bottom: 2.65rem;
-}
-
 .subcontainer {
-    display: flex;
-    padding: 2rem;
-    text-align: left;
-    margin-top: 2.4rem;
-    align-items: center;
-    border-radius: 0.8rem;
-    flex-direction: column;
-    justify-content: center;
-    background: vars.$dirty-white;
-
     &--links {
-        gap: 2.4rem;
         padding: 0px;
         display: flex;
         flex-direction: column;
         background: transparent;
+        gap: vars.$gap-between-object;
     }
-}
 
-.footer {
-    z-index: 1;
-    bottom: 0px;
-    padding: 1.6rem;
-    position: sticky;
-    background: vars.$white;
-
-    &::before {
-        content: "";
-        top: 0px;
-        left: 0px;
-        right: 0px;
-        height: 1px;
-        position: absolute;
-        background: vars.$light-grey;
+    &--loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }

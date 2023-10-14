@@ -1,7 +1,7 @@
 @use "../../styles/vars";
 
-.container {
+.card {
+    gap: 1.2rem;
     display: flex;
     flex-direction: column;
-    gap: vars.$gap-between-object;
 }

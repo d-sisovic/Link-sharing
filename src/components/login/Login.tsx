@@ -4,17 +4,20 @@ import { toastrConfig } from "../../util";
 import { useForm } from "react-hook-form";
 import LoginWrapper from "./LoginWrapper";
 import 'react-toastify/dist/ReactToastify.css';
-import { Routes } from "../../ts/enums/routes.enum";
+import { useLogout } from "../../hooks/use-logout";
 import Input from "../../ui/components/input/Input";
 import { useEffect, useRef, useState } from "react";
 import Button from "../../ui/components/button/Button";
 import { ToastContainer, toast } from "react-toastify";
 import emailSvg from "../../assets/images/icon-email.svg";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { RoutePaths } from "../../ts/enums/rout-paths.enum";
 import passwordSvg from "../../assets/images/icon-password.svg";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Login = () => {
+  useLogout();
+  
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -32,8 +35,8 @@ const Login = () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
 
-      onNavigate(Routes.HOME);
-    } catch (error) {
+      onNavigate(RoutePaths.LINK);
+    } catch {
       setIsPending(false);
       toast.error('Error logging in. Please try again!', toastrConfig);
     }
@@ -49,7 +52,7 @@ const Login = () => {
     setSearchParams('');
   }, [toastValue, setSearchParams]);
 
-  const onNavigate = (url: Routes) => navigate(`/${url}`);
+  const onNavigate = (url: RoutePaths) => navigate(`/${url}`);
 
   return (
     <LoginWrapper>
@@ -80,9 +83,9 @@ const Login = () => {
           <img src={passwordSvg} alt="password" />
         </Input>
 
-        <Button label="Login" outlineMode={false} disabled={!isValid || isPending} clickHandler={onLogin} />
+        <Button label="Login" disabled={!isValid || isPending} clickHandler={onLogin} />
 
-        <div className={styles['navigate']} onClick={() => onNavigate(Routes.REGISTER)}>
+        <div className={styles['navigate']} onClick={() => onNavigate(RoutePaths.REGISTER)}>
           <p>Don't have an account?</p>
           <p className={styles['navigate--highlight']}>Create account</p>
         </div>

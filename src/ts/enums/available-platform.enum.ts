@@ -1,16 +1,16 @@
 export enum AvailablePlatform {
-    GITHUB = 'https://github.com/',
+    GITHUB = 'https://www.github.com/',
     FRONTEND_MENTOR = 'https://www.frontendmentor.io/',
-    TWITTER = 'https://twitter.com/',
+    TWITTER = 'https://www.twitter.com/',
     LINKEDIN = 'https://www.linkedin.com/',
     YOUTUBE = 'https://www.youtube.com/',
     FACEBOOK = 'https://www.facebook.com/',
     TWITCH = 'https://www.twitch.tv/',
-    DEVTO = 'https://dev.to/',
+    DEVTO = 'https://www.dev.to/',
     CODEWARS = 'https://www.codewars.com/',
-    CODEPEN = 'https://codepen.io/',
+    CODEPEN = 'https://www.codepen.io/',
     FREE_CODE_CAMP = 'https://www.freecodecamp.org/',
-    GITLAB = 'https://gitlab.com/',
-    HASHNODE = 'https://hashnode.com/',
-    STACK_OVERFLOW = 'https://stackoverflow.com/'
+    GITLAB = 'https://www.gitlab.com/',
+    HASHNODE = 'https://www.hashnode.com/',
+    STACK_OVERFLOW = 'https://www.stackoverflow.com/'
 }

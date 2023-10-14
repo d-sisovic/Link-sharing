@@ -5,6 +5,8 @@
     background: vars.$dirty-white;
 }
 
+$purple-filter: brightness(0) saturate(100%) invert(23%) sepia(30%) saturate(7219%) hue-rotate(246deg) brightness(102%) contrast(106%);
+
 .nav {
     gap: 0.8rem;
     display: flex;
@@ -32,6 +34,14 @@
             border-radius: 0.8rem;
             padding: 1.1rem 2.7rem;
 
+            &:hover {
+                color: vars.$purple;
+
+                img {
+                    filter: $purple-filter;
+                }
+            }
+
             img {
                 width: 20px;
                 height: 20px;
@@ -41,7 +51,7 @@
                 background: vars.$light-light-purple;
 
                 img {
-                    filter: brightness(0) saturate(100%) invert(23%) sepia(30%) saturate(7219%) hue-rotate(246deg) brightness(102%) contrast(106%);
+                    filter: $purple-filter;
                 }
             }
         }

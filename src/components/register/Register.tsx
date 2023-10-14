@@ -1,18 +1,19 @@
 import { useState } from "react";
 import auth from "../../../firebase";
-import { toastrConfig } from "../../util";
 import { useForm } from "react-hook-form";
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
 import styles from "../login/Login.module.scss";
 import LoginWrapper from "../login/LoginWrapper";
-import { Routes } from "../../ts/enums/routes.enum";
+import { useLogout } from "../../hooks/use-logout";
 import Input from "../../ui/components/input/Input";
 import { ToastContainer, toast } from "react-toastify";
 import Button from "../../ui/components/button/Button";
 import emailSvg from "../../assets/images/icon-email.svg";
+import { RoutePaths } from "../../ts/enums/rout-paths.enum";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { emailAsyncValidator, toastrConfig } from "../../util";
 import passwordSvg from "../../assets/images/icon-password.svg";
-import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from "firebase/auth";
 
 const passwordValidationSchema = {
     required: "Required",
@@ -22,19 +23,9 @@ const passwordValidationSchema = {
     }
 };
 
-const emailAsyncValidator = async (email: string) => {
-    const emailInUse = "Email already in use";
-
-    try {
-        const result = await fetchSignInMethodsForEmail(auth, email);
-
-        return result.length ? true : emailInUse;
-    } catch {
-        return emailInUse;
-    }
-};
-
 const Register = () => {
+    useLogout();
+    
     const navigate = useNavigate();
     const [isPending, setIsPending] = useState<boolean>(false);
     const { register, getValues, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
@@ -49,14 +40,14 @@ const Register = () => {
             await createUserWithEmailAndPassword(auth, email, password);
 
             onLoginNavigate(true);
-        } catch (error) {
+        } catch {
             setIsPending(false);
             toast.error('Error creating account. Please try again!', toastrConfig);
         }
     };
 
     const onLoginNavigate = (query = false) => {
-        const fullUrl = query ? `/${Routes.LOGIN}?toast=true` : `/${Routes.LOGIN}`;
+        const fullUrl = query ? `/${RoutePaths.LOGIN}?toast=true` : `/${RoutePaths.LOGIN}`;
 
         navigate(fullUrl);
     };
@@ -100,7 +91,7 @@ const Register = () => {
 
                 <p className={styles['info']}>Password must contain at least 8 characters</p>
 
-                <Button outlineMode={false} label="Create new account" disabled={!isValid || isPending} clickHandler={onRegister} />
+                <Button label="Create new account" disabled={!isValid || isPending} clickHandler={onRegister} />
 
                 <div className={styles['navigate']} onClick={() => onLoginNavigate()}>
                     <p>Already have an account?</p>

@@ -1,3 +1,4 @@
+import auth from "../firebase";
 import devToSvg from "./assets/images/icon-devto.svg";
 import twitchSvg from "./assets/images/icon-twitch.svg";
 import githubSvg from "./assets/images/icon-github.svg";
@@ -5,6 +6,7 @@ import gitlabSvg from "./assets/images/icon-gitlab.svg";
 import codepenSvg from "./assets/images/icon-codepen.svg";
 import twitterSvg from "./assets/images/icon-twitter.svg";
 import youtubeSvg from "./assets/images/icon-youtube.svg";
+import { fetchSignInMethodsForEmail } from "firebase/auth";
 import facebookSvg from "./assets/images/icon-facebook.svg";
 import linkedinSvg from "./assets/images/icon-linkedin.svg";
 import codewarsSvg from "./assets/images/icon-codewars.svg";
@@ -13,6 +15,18 @@ import freeCodeCampSvg from "./assets/images/icon-freecodecamp.svg";
 import stackoverflowSvg from "./assets/images/icon-stack-overflow.svg";
 import { AvailablePlatform } from "./ts/enums/available-platform.enum";
 import frontendMentorSvg from "./assets/images/icon-frontend-mentor.svg";
+
+export const emailAsyncValidator = async (email: string) => {
+  const emailInUse = "Email already in use";
+
+  try {
+      const result = await fetchSignInMethodsForEmail(auth, email);
+
+      return !result.length ? true : emailInUse;
+  } catch {
+      return emailInUse;
+  }
+};
 
 export const debounce = (callbackFn: (args: string[]) => void, delay: number) => {
   let timeoutId: NodeJS.Timeout;

@@ -21,9 +21,13 @@
         color: vars.$purple;
         background: vars.$white;
         outline: 1px solid vars.$purple;
+
+        &:active {
+            background: vars.$light-light-purple;
+        }
     }
 
-    &:active {
+    &:active:not(.button--outline) {
         opacity: 0.5;
     }
 }

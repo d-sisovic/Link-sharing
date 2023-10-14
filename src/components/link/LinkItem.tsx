@@ -1,6 +1,7 @@
 import styles from "./LinkItem.module.scss";
 import { platformsDropdown } from "../../util";
 import { UTIL } from "../../ts/enums/util.enum";
+import Card from "../../ui/components/card/Card";
 import Input from "../../ui/components/input/Input";
 import { useEffect, useState, useMemo } from "react";
 import Select from "../../ui/components/select/Select";
@@ -39,7 +40,7 @@ const LinkItem = ({ index, link, formValidity, dragProps, removeLinkHandler, for
             pattern: {
                 message: "",
                 // eslint-disable-next-line no-useless-escape
-                value: new RegExp(`(${formValues.platform as AvailablePlatform}.{1,})`)
+                value: new RegExp(`(${formValues.platform as AvailablePlatform}.{1,90})`)
             }
         };
 
@@ -58,26 +59,26 @@ const LinkItem = ({ index, link, formValidity, dragProps, removeLinkHandler, for
         formValidityHandler([platform, value] as [AvailablePlatform, string], isValid, isDirty, link.id);
     }, [formValues, isDirty, isValid, link.id, formValidityHandler]);
 
-    return <div className={styles.card}>
-        <div className={styles['card__header']}>
-            <p className={styles['card__header__id']}  {...dragProps}>
-                {!isNewLink && <img src={rectangle} alt="rectangle" className={styles['card__header__id__img']} />}
+    return <Card>
+        <div className={styles.header}>
+            <p className={styles['header__id']}  {...dragProps}>
+                {!isNewLink && <img src={rectangle} alt="rectangle" className={styles['header__id__img']} />}
                 Link #{index + 1}
             </p>
 
-            <p className={styles['card__header__remove']} onClick={onRemoveItem}>Remove</p>
+            <p className={styles['header__remove']} onClick={onRemoveItem}>Remove</p>
         </div>
 
-        <div className={styles['card__body']}>
+        <div className={styles.body}>
             <Select name="platform" label="Platform" active={link.platform} options={platforms} control={control as unknown as Control<FieldValues, unknown>} />
 
-            <Input name="value" type="text" label="Link" placeholder="e.g. https://www.github.com/johnappleseed"
+            <Input name="value" label="Link" placeholder="e.g. https://www.github.com/johnappleseed"
                 errors={errors} register={register as unknown as UseFormRegister<FieldValues>}
                 validationSchema={linkValidationSchema}>
                 <img src={linkSvg} alt="link" />
             </Input>
         </div>
-    </div>;
+    </Card>;
 }
 
 export default LinkItem;
