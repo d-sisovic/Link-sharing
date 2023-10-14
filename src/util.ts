@@ -55,71 +55,85 @@ export const toastrConfig = {
 
 export const platformsDropdown = [
   {
+    background: "#1A1A1A",
     img: githubSvg,
     label: "GitHub",
     value: AvailablePlatform.GITHUB
   },
   {
+    background: "#FFF",
     img: frontendMentorSvg,
     label: "Frontend Mentor",
     value: AvailablePlatform.FRONTEND_MENTOR
   },
   {
+    background: "#43B7E9",
     img: twitterSvg,
     label: "Twitter",
     value: AvailablePlatform.TWITTER
   },
   {
+    background: "#2D68FF",
     img: linkedinSvg,
     label: "LinkedIn",
     value: AvailablePlatform.LINKEDIN
   },
   {
+    background: "#EE3939",
     img: youtubeSvg,
     label: "YouTube",
     value: AvailablePlatform.YOUTUBE
   },
   {
+    background: "#2442AC",
     img: facebookSvg,
     label: "Facebook",
     value: AvailablePlatform.FACEBOOK
   },
   {
+    background: "#EE3FC8",
     img: twitchSvg,
     label: "Twitch",
     value: AvailablePlatform.TWITCH
   },
   {
+    background: "#333",
     img: devToSvg,
     label: "Dev.to",
     value: AvailablePlatform.DEVTO
   },
   {
+    background: "#8A1A50",
     img: codewarsSvg,
     label: "Codewars",
     value: AvailablePlatform.CODEWARS
   },
   {
+    background: "#010101",
     img: codepenSvg,
     label: "Codepen",
     value: AvailablePlatform.CODEPEN
   },
   {
+    background: "#302267",
     img: freeCodeCampSvg,
     label: "freeCodeCamp",
     value: AvailablePlatform.FREE_CODE_CAMP
   },
   {
+    background: "#EB4925",
     img: gitlabSvg,
     label: "GitLab",
     value: AvailablePlatform.GITLAB
   },
   {
+    background: "#0330D1",
     img: hashnodeSvg,
     label: "Hashnode",
     value: AvailablePlatform.HASHNODE
   },
   {
+    background: "#EC7100",
     img: stackoverflowSvg,
     label: "Stack Overflow",
     value: AvailablePlatform.STACK_OVERFLOW

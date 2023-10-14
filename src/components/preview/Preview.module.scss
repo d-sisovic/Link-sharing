@@ -1,0 +1,50 @@
+@use "../../styles/vars";
+
+%center-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.container {
+    &__header {
+        gap: 1.6rem;
+        display: flex;
+        margin-bottom: 6rem;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.6rem 1.6rem 1.6rem 2.4rem;
+    }
+
+    &__profile {
+        margin-bottom: 5.6rem;
+        @extend %center-content;
+
+        img {
+            width: 10.4rem;
+            height: 10.4rem;
+            border-radius: 100%;
+            margin-bottom: 2.5rem;
+            outline: 4px solid vars.$purple;
+        }
+    }
+
+    &__links {
+        @extend %center-content;
+        gap: 2rem;
+    }
+
+    &__name {
+        font-size: 3.2rem;
+        color: vars.$black;
+        margin-bottom: 0.8rem;
+        font-weight: vars.$bold-weight;
+    }
+
+    &__email {
+        font-size: 1.6rem;
+        color: vars.$dark-grey;
+        font-weight: vars.$regular-weight;
+    }
+}

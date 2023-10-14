@@ -8,13 +8,14 @@ import { ToastContainer, toast } from "react-toastify";
 import Button from "../../ui/components/button/Button";
 import { Firebase } from "../../ts/enums/firebase.enum";
 import Spinner from "../../ui/components/spinner/Spinner";
+import { useFetchLinks } from "../../hooks/use-fetch-links";
 import { platformsDropdown, toastrConfig } from "../../util";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { IFirebaseLink } from "../../ts/models/firebase-link.model";
 import commonStyles from "../../styles/common/link-profile.module.scss";
 import { AvailablePlatform } from "../../ts/enums/available-platform.enum";
+import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { ILinkWrapperFormValidity } from "./ts/models/link-wrapper-form-validity.model";
-import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
 
 const getFormValidityValue = (formValidity: ILinkWrapperFormValidity[], key: keyof ILinkWrapperFormValidity) => {
     return formValidity.map(item => item[key]);
@@ -101,9 +102,9 @@ const reorder = (links: IFirebaseLink[], startIndex: number, endIndex: number) =
 };
 
 const LinkWrapper = () => {
+    const { isLoading, links, setLinks } = useFetchLinks();
     const [newFirebaseLinks, setNewLinks] = useState<IFirebaseLink[]>([]);
     const [formValidity, setFormValidity] = useState<ILinkWrapperFormValidity[]>([]);
-    const [{ isLoading, links }, setLinks] = useState<{ isLoading: boolean; links: IFirebaseLink[] }>({ isLoading: true, links: [] });
 
     const onDragEnd = async (result: DropResult) => {
         if (!result.destination) { return; }
@@ -144,18 +145,6 @@ const LinkWrapper = () => {
         return formInvalid || formUntouched || (!newFirebaseLinks.length && !links.length);
     }, [formValidity, newFirebaseLinks.length, links.length]);
 
-    const fetchLinks = async () => {
-        try {
-            const querySnapshot = await getDocs(collection(db, Firebase.COLLECTION));
-            const links = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as IFirebaseLink[];
-
-            setLinks({ isLoading: false, links });
-        } catch {
-            setLinks({ isLoading: false, links: [] });
-            toast.error('Error fetching links. Please try again!', toastrConfig);
-        }
-    }
-
     const formValidityHandler = useCallback((formValues: [AvailablePlatform, string], valid: boolean, dirty: boolean, id: string) => {
         const [platform, value] = formValues;
 
@@ -193,7 +182,7 @@ const LinkWrapper = () => {
         } catch {
             toast.error('Error deleting link. Please try again!', toastrConfig);
         }
-    }, []);
+    }, [setLinks]);
 
     const onSaveForm = async () => {
         setLinks(previousState => ({ isLoading: true, links: previousState.links }));
@@ -217,10 +206,6 @@ const LinkWrapper = () => {
 
         setFormValidity(getInitialFormValidity(links));
     }, [isLoading, links]);
-
-    useEffect(() => {
-        fetchLinks();
-    }, []);
 
     return <>
         <ToastContainer position="top-right" autoClose={3000} theme="colored" />

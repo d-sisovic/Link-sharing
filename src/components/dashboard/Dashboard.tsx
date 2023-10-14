@@ -17,7 +17,7 @@ const Dashboard = () => {
 
     navigate(RoutePaths.LINK);
   }, [navigate, location.pathname]);
-  
+
   return <div className={styles.container}>
     <nav className={styles.nav}>
       <img src={logo} alt="logo" />
@@ -32,7 +32,9 @@ const Dashboard = () => {
         </NavLink>
       </div>
 
-      <img src={preview} alt="preview" className={styles.preview} />
+      <NavLink to={RoutePaths.PREVIEW}>
+        <img src={preview} alt="preview" className={styles.preview} />
+      </NavLink>
     </nav>
 
     <main className={styles.main}>

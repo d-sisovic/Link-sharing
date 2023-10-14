@@ -5,7 +5,7 @@ import { User, updateProfile } from "firebase/auth";
 import Spinner from "../../ui/components/spinner/Spinner";
 import { useAuthData } from "../../context/AuthContextData";
 import { ChangeEvent, useRef, useState, useEffect } from "react";
-import uploadSve from "../../assets/images/icon-upload-image.svg";
+import uploadSvg from "../../assets/images/icon-upload-image.svg";
 import { IProfilePicture } from './ts/models/profile-picture.model';
 import { getDownloadURL, ref as storageRef, uploadBytes } from "firebase/storage";
 
@@ -68,8 +68,8 @@ const ProfilePicture = () => {
             <h1 className={`${styles.heading}`}>Profile picture</h1>
 
             <div className={`${styles['container__upload']} ${imageState.imageURL ? styles['container__upload--change'] : ''}`}>
-                {imageState.uploading && <div className={styles['container__upload__progress']}><Spinner size={2} /></div>}
-                <img src={uploadSve} alt="upload" className={styles['container__upload__image']} />
+                {imageState.uploading && <div className={styles['container__upload__progress']}><Spinner size={4} /></div>}
+                <img src={uploadSvg} alt="upload" className={styles['container__upload__image']} />
 
                 {!imageState.imageURL && <span className={styles['container__upload__text']}>+ Upload Image</span>}
 

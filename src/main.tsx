@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Login from './components/login/Login';
 import AuthContext from './context/AuthContext';
+import Preview from './components/preview/Preview';
 import Profile from './components/profile/Profile';
 import Register from './components/register/Register';
 import LinkWrapper from './components/link/LinkWrapper';
@@ -25,8 +26,12 @@ const router = createBrowserRouter([
       {
         path: RoutePaths.PROFILE,
         element: <Profile />
-      },
+      }
     ]
+  },
+  {
+    path: RoutePaths.PREVIEW,
+    element: <AuthContext><Preview /></AuthContext>
   },
   {
     path: RoutePaths.LOGIN,
