@@ -17,7 +17,7 @@ const AuthContext = ({ children }: IBaseProp) => {
 
     useEffect(() => {
         const subscription = onAuthStateChanged(auth, user => {
-            if (!user && location.pathname !== `/${RoutePaths.PREVIEW}`) { navigate(`/${RoutePaths.LOGIN}`); }
+            if (!user && !location.pathname.startsWith(`/${RoutePaths.PREVIEW}`)) { navigate(`/${RoutePaths.LOGIN}`); }
 
             return (setAuthState({ user: user || null, isLoading: false }));
         });

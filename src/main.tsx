@@ -30,7 +30,7 @@ const router = createBrowserRouter([
     ]
   },
   {
-    path: RoutePaths.PREVIEW,
+    path: RoutePaths.PREVIEW + '/:id',
     element: <AuthContext><Preview /></AuthContext>
   },
   {

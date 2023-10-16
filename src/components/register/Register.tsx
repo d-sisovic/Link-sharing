@@ -1,14 +1,16 @@
 import { useState } from "react";
-import auth from "../../../firebase";
 import { useForm } from "react-hook-form";
+import auth, { db } from "../../../firebase";
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
 import styles from "../login/Login.module.scss";
 import LoginWrapper from "../login/LoginWrapper";
+import { doc, setDoc } from "firebase/firestore";
 import { useLogout } from "../../hooks/use-logout";
 import Input from "../../ui/components/input/Input";
 import { ToastContainer, toast } from "react-toastify";
 import Button from "../../ui/components/button/Button";
+import { Firebase } from "../../ts/enums/firebase.enum";
 import emailSvg from "../../assets/images/icon-email.svg";
 import { RoutePaths } from "../../ts/enums/rout-paths.enum";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -37,7 +39,11 @@ const Register = () => {
         const [email, password] = getValues(['email', 'password']);
 
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
+            const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+
+            const docRef = doc(db, Firebase.USERS, userCredentials.user.uid);
+
+            await setDoc(docRef, { email });
 
             onLoginNavigate(true);
         } catch {

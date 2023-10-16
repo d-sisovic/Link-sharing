@@ -1,7 +1,9 @@
 import Card from "../../ui/components/card/Card";
 import styles from "./ProfilePicture.module.scss";
-import auth, { storage } from "../../../firebase";
+import { updateDoc, doc } from "firebase/firestore";
 import { User, updateProfile } from "firebase/auth";
+import auth, { db, storage } from "../../../firebase";
+import { Firebase } from "../../ts/enums/firebase.enum";
 import Spinner from "../../ui/components/spinner/Spinner";
 import { useAuthData } from "../../context/AuthContextData";
 import { ChangeEvent, useRef, useState, useEffect } from "react";
@@ -47,13 +49,17 @@ const ProfilePicture = () => {
 
                     if (invalid) { return; }
          
+                    const docRef = doc(db, Firebase.USERS, (auth.currentUser as User).uid);
                     const imageRef = storageRef(storage, `profile/${user?.email}/profileImage`);
                     const imageURL = await getDownloadURL((await uploadBytes(imageRef, firstFile)).ref);
-                    await updateProfile(auth.currentUser as User, { photoURL: imageURL });
+                    const uploadData = { photoURL: imageURL };
+
+                    await updateProfile(auth.currentUser as User, uploadData);
+                    await updateDoc(doc(db, Firebase.USERS, docRef.id), uploadData);
 
                     setImageState({ invalid: false, uploading: false, imageURL });
                     resetInputFileRef();
-                } catch {
+                } catch (error) {
                     setImageState({ invalid: true, uploading: false, imageURL: null });
                     resetInputFileRef();
                 }

@@ -1,6 +1,6 @@
 import LinkList from "./LinkList";
 import LinkIntro from "./LinkIntro";
-import { db } from "../../../firebase";
+import auth, { db } from "../../../firebase";
 import styles from "./LinkWrapper.module.scss";
 import { DropResult } from "@hello-pangea/dnd";
 import { UTIL } from "../../ts/enums/util.enum";
@@ -14,8 +14,8 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { IFirebaseLink } from "../../ts/models/firebase-link.model";
 import commonStyles from "../../styles/common/link-profile.module.scss";
 import { AvailablePlatform } from "../../ts/enums/available-platform.enum";
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { ILinkWrapperFormValidity } from "./ts/models/link-wrapper-form-validity.model";
+import { addDoc, collection, deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 
 const getFormValidityValue = (formValidity: ILinkWrapperFormValidity[], key: keyof ILinkWrapperFormValidity) => {
     return formValidity.map(item => item[key]);
@@ -29,26 +29,32 @@ const getChangedValidLinks = (formValidity: ILinkWrapperFormValidity[]) => {
     }, [] as IFirebaseLink[]);
 };
 
-const deleteLinkFromDb = (linkId: string) => {
-    return deleteDoc(doc(db, Firebase.COLLECTION, linkId));
+const deleteLinkFromDb = (linkId: string, userId: string) => {
+    return deleteDoc(doc(db, Firebase.COLLECTION + userId, linkId));
 };
 
-const addLinkToDb = (data: Record<string, string>) => {
-    return addDoc(collection(db, Firebase.COLLECTION), data);
+const addLinkToDb = (data: Record<string, string | number>, userId: string) => {
+    return addDoc(collection(db, Firebase.COLLECTION + userId), data);
 };
 
-const updateLinkToDb = (linkId: string, data: Record<string, string>) => {
-    return updateDoc(doc(db, Firebase.COLLECTION, linkId), data);
+const setLinkToDb = (link: IFirebaseLink, index: number, userId: string) => {
+    const { id, ...rest } = link;
+
+    return setDoc(doc(db, Firebase.COLLECTION + userId, id), { ...rest, index });
+};
+
+const updateLinkToDb = (linkId: string, data: Record<string, string | number>, userId: string) => {
+    return updateDoc(doc(db, Firebase.COLLECTION + userId, linkId), data);
 };
 
 const getLinkNotMatchingById = (links: IFirebaseLink[], linkId: string) => {
     return links.filter(link => link.id !== linkId);
 };
 
-const getFirebaseRequests = (linksToSave: IFirebaseLink[]) => {
+const getFirebaseRequests = (linksToSave: IFirebaseLink[], userId: string) => {
     return linksToSave.map(link => {
         const { id, ...rest } = link;
-        const data = id.startsWith(UTIL.NEW_LINK_ID) ? addLinkToDb(rest) : updateLinkToDb(link.id, rest);
+        const data = id.startsWith(UTIL.NEW_LINK_ID) ? addLinkToDb(rest, userId) : updateLinkToDb(link.id, rest, userId);
 
         return { id, data };
     });
@@ -80,8 +86,9 @@ const getInitialFormValidity = (links: IFirebaseLink[]) => {
 };
 
 const getUILinksAfterSave = async (formValidity: ILinkWrapperFormValidity[]) => {
+    const userId = auth.currentUser?.uid || "";
     const changedValidLinks = getChangedValidLinks(formValidity);
-    const firebaseRequests = getFirebaseRequests(changedValidLinks);
+    const firebaseRequests = getFirebaseRequests(changedValidLinks, userId);
 
     const saveResponse = await Promise.all(firebaseRequests.map(request => request.data));
     const keysResponse = firebaseRequests.map((request, index) => ({ id: request.id, newId: saveResponse[index]?.id || request.id }));
@@ -93,32 +100,28 @@ const getUILinksAfterSave = async (formValidity: ILinkWrapperFormValidity[]) => 
     });
 };
 
-const reorder = (links: IFirebaseLink[], startIndex: number, endIndex: number) => {
-    const result = Array.from(links);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
+const reorderLinks = (links: IFirebaseLink[], startIndex: number, endIndex: number) => {
+    const linksCopy = Array.from(links);
+    const [removed] = linksCopy.splice(startIndex, 1);
+    linksCopy.splice(endIndex, 0, removed);
 
-    return result;
+    return linksCopy.map((link, index) => ({ ...link, index }));
 };
 
 const LinkWrapper = () => {
-    const { isLoading, links, setLinks } = useFetchLinks();
     const [newFirebaseLinks, setNewLinks] = useState<IFirebaseLink[]>([]);
     const [formValidity, setFormValidity] = useState<ILinkWrapperFormValidity[]>([]);
+    const { isLoading, links, setLinks } = useFetchLinks(auth.currentUser?.uid || "");
 
     const onDragEnd = async (result: DropResult) => {
         if (!result.destination) { return; }
 
-        const reorderedLinks = reorder(links, result.source.index, result.destination.index);
+        const userId = auth.currentUser?.uid || "";
+        const reorderedLinks = reorderLinks(links, result.source.index, result.destination.index);
 
         try {
-            await Promise.all(reorderedLinks.map(link => deleteLinkFromDb(link.id)));
-            await Promise.all(reorderedLinks.map(link => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { id, ...rest } = link;
-
-                return addLinkToDb(rest);
-            }));
+            await Promise.all(reorderedLinks.map(link => deleteLinkFromDb(link.id, userId)));
+            await Promise.all(reorderedLinks.map((link, index) => setLinkToDb(link, index, userId)));
 
             setLinks(previousState => ({ ...previousState, links: reorderedLinks }));
         } catch {
@@ -134,7 +137,7 @@ const LinkWrapper = () => {
             const platform = firstUnusedPlatform.value;
             const id = UTIL.NEW_LINK_ID + previousState.length;
 
-            return [...previousState, { id, platform, value: "" }];
+            return [...previousState, { id, platform, index: previousState.length, value: "" }];
         });
     };
 
@@ -151,7 +154,7 @@ const LinkWrapper = () => {
         setFormValidity(previousState => {
             const matchingItem = previousState.some(item => item.link.id === id);
 
-            if (!matchingItem) { return [...previousState, { valid, dirty, link: { id, platform, value } }]; }
+            if (!matchingItem) { return [...previousState, { valid, dirty, link: { id, platform, index: previousState.length, value } }]; }
 
             return previousState.map(item => {
                 if (item.link.id !== id) { return item; }
@@ -172,8 +175,10 @@ const LinkWrapper = () => {
             return;
         }
 
+        const userId = auth.currentUser?.uid || "";
+
         try {
-            await deleteLinkFromDb(linkId);
+            await deleteLinkFromDb(linkId, userId);
 
             removeFormValidityEntr(linkId);
             setLinks(previousState => ({ ...previousState, links: getLinkNotMatchingById(previousState.links, linkId) }));
@@ -195,7 +200,8 @@ const LinkWrapper = () => {
             setLinks(previousState => ({ isLoading: false, links: getUpdatedLinkForUI(previousState.links, linksUI) }));
 
             toast.success('Link/s successfully created/updated.', toastrConfig);
-        } catch {
+        } catch (error) {
+            console.log(error);
             setLinks(previousState => ({ isLoading: false, links: previousState.links }));
             toast.error('Error adding link. Please try again!', toastrConfig);
         }

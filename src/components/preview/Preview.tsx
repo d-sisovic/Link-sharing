@@ -1,22 +1,29 @@
+import { db } from "../../../firebase";
 import { toastrConfig } from "../../util";
 import styles from "./Preview.module.scss";
-import { useNavigate } from "react-router-dom";
 import PreviewLinkList from "./PreviewLinkList";
+import { doc, getDoc } from "firebase/firestore";
 import Button from "../../ui/components/button/Button";
 import { ToastContainer, toast } from "react-toastify";
-import Spinner from "../../ui/components/spinner/Spinner";
+import { Firebase } from "../../ts/enums/firebase.enum";
+import { useEffect, useCallback, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../ui/components/loading/Loading";
 import { useAuthData } from "../../context/AuthContextData";
 import { RoutePaths } from "../../ts/enums/rout-paths.enum";
 import { useFetchLinks } from "../../hooks/use-fetch-links";
-import uploadSvg from "../../assets/images/icon-upload-image.svg";
+import { IUserPreview } from "./ts/models/user-preview.model";
+
+const initialUserPreview = { loading: true, email: "", photoURL: "", displayName: "" };
 
 const Preview = () => {
   const navigate = useNavigate();
-  const { user, isLoading } = useAuthData();
-  const { isLoading: isLoadingLinks, links } = useFetchLinks();
+  const { user } = useAuthData();
+  const { id: userId } = useParams();
+  const { isLoading: isLoadingLinks, links } = useFetchLinks(userId || "");
+  const [userPreviewData, setUserPreviewData] = useState<IUserPreview>(initialUserPreview);
 
-  const onGoToEditor = () => navigate(`/${RoutePaths.PROFILE}`);
+  const onNavigate = useCallback((url: string) => navigate(url), [navigate]);
 
   const onShareLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -24,7 +31,29 @@ const Preview = () => {
     toast.success('Link copied to clipboard.', toastrConfig);
   };
 
-  if (isLoading) { return <Loading />; }
+  const fetchUserPreviewData = useCallback(async () => {
+    try {
+      const documentReference = doc(db, Firebase.USERS, userId as string);
+      const coreUserData = (await getDoc(documentReference)).data();
+
+      if (!coreUserData) {
+        onNavigate(`/${RoutePaths.LOGIN}`);
+        return;
+      }
+
+      const displayName = (coreUserData?.displayName || "").replace(".", " ");
+
+      setUserPreviewData(previousState => ({ ...previousState, ...coreUserData, loading: false, displayName }));
+    } catch {
+      onNavigate(`/${RoutePaths.LOGIN}`);
+    }
+  }, [userId, onNavigate]);
+
+  useEffect(() => {
+    fetchUserPreviewData();
+  }, [fetchUserPreviewData]);
+
+  if (isLoadingLinks || userPreviewData.loading) { return <Loading />; }
 
   return (
     <>
@@ -32,29 +61,29 @@ const Preview = () => {
 
       <div className={styles.container}>
         <div className={styles['container__header']}>
-          <div>
-            <Button label="Back to Editor" outlineMode={true} clickHandler={onGoToEditor} />
-          </div>
+          {user !== null && <>
+            <div>
+              <Button label="Back to Editor" outlineMode={true} clickHandler={() => onNavigate(`/${RoutePaths.PROFILE}`)} />
+            </div>
 
-          <div>
-            <Button label="Share Link" clickHandler={onShareLink} />
-          </div>
+            <div>
+              <Button label="Share Link" clickHandler={onShareLink} />
+            </div>
+          </>}
         </div>
 
-        <div className={styles['container__profile']}>
-          {user?.photoURL && <img src={user.photoURL} alt="profile image" />}
+        <>
+          <div className={styles['container__profile']}>
+            <img src={userPreviewData.photoURL} alt="profile image" />
 
-          {!user?.photoURL && <img src={uploadSvg} alt="placeholder image" />}
+            <h1 className={styles['container__name']}>{userPreviewData.displayName}</h1>
 
-          <h1 className={styles['container__name']}>{user?.displayName || "No name"}</h1>
-
-          <h3 className={styles['container__email']}>{user?.email}</h3>
-        </div>
+            <h3 className={styles['container__email']}>{userPreviewData.email}</h3>
+          </div>
+        </>
 
         <div className={styles['container__links']}>
-          {!isLoadingLinks && <PreviewLinkList links={links} />}
-
-          {isLoadingLinks && <Spinner size={4} />}
+          <PreviewLinkList links={links} />
         </div>
       </div>
     </>

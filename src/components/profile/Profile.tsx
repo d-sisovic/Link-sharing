@@ -1,11 +1,13 @@
-import auth from "../../../firebase";
 import ProfileForm from "./ProfileForm";
 import { toastrConfig } from "../../util";
 import styles from "./Profile.module.scss";
+import auth, { db } from "../../../firebase";
 import ProfilePicture from "./ProfilePicture";
+import { doc, updateDoc } from "firebase/firestore";
 import { useCallback, useState, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import Button from "../../ui/components/button/Button";
+import { Firebase } from "../../ts/enums/firebase.enum";
 import { useAuthData } from "../../context/AuthContextData";
 import { IProfileForm } from "./ts/models/profile-form.model";
 import { IProfileState } from "./ts/models/profile-state.model";
@@ -27,9 +29,12 @@ const Profile = () => {
 
         try {
             const currentUser = auth.currentUser as User;
+            const displayName = `${firstName}.${lastName}`;
+            const docRef = doc(db, Firebase.USERS, currentUser.uid);
 
             await updateEmail(currentUser, email);
-            await updateProfile(currentUser, { displayName: `${firstName}.${lastName}` });
+            await updateProfile(currentUser, { displayName });
+            await updateDoc(doc(db, Firebase.USERS, docRef.id), { displayName, email });
 
             (profileFormRef.current as unknown as { resetForm: () => void }).resetForm();
 

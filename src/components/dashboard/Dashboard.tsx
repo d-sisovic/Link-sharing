@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import auth from "../../../firebase";
 import styles from "./Dashboard.module.scss";
 import DashboardWrapper from "./DashboardWrapper";
 import { RoutePaths } from "../../ts/enums/rout-paths.enum";
@@ -32,7 +33,7 @@ const Dashboard = () => {
         </NavLink>
       </div>
 
-      <NavLink to={RoutePaths.PREVIEW}>
+      <NavLink to={RoutePaths.PREVIEW + `/${auth.currentUser?.uid}`}>
         <img src={preview} alt="preview" className={styles.preview} />
       </NavLink>
     </nav>

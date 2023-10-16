@@ -26,7 +26,7 @@ const coreEmailValidationSchema = {
 const ProfileForm = forwardRef(({ user, formStateHandler }: IProfileForm, ref) => {
     useImperativeHandle(ref, () => ({ resetForm() { reset(formValues); } }));
 
-    const [firstName, lastName] = (user.displayName as string).split('.');
+    const [firstName, lastName] = (user.displayName || ".").split('.');
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const defaultValues = { email: user.email, firstName, lastName } as Record<string, any>;
