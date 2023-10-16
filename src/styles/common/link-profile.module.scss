@@ -1,4 +1,5 @@
 @use "../../styles/vars";
+@use "../../styles/breakpoint";
 
 .container {
     padding: 2.4rem;
@@ -13,17 +14,13 @@
 }
 
 .subcontainer {
-    padding: 2rem;
     border-radius: 0.8rem;
-    background: vars.$dirty-white;
     margin-top: vars.$gap-between-object;
 }
 
 .footer {
-    z-index: 1;
-    bottom: 0px;
     padding: 1.6rem;
-    position: sticky;
+    position: relative;
     background: vars.$white;
 
     &::before {
@@ -34,5 +31,24 @@
         height: 1px;
         position: absolute;
         background: vars.$light-grey;
+    }
+}
+
+@include breakpoint.mq(tablet) {
+    .container {
+        padding: 4rem;
+    }
+
+    .footer {
+        display: flex;
+        padding: 2.4rem 4rem;
+        justify-content: flex-end;
+
+        &--fixed {
+            left: 0;
+            right: 0;
+            bottom: 0;
+            position: fixed;
+        }
     }
 }

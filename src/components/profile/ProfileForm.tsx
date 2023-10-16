@@ -50,21 +50,15 @@ const ProfileForm = forwardRef(({ user, formStateHandler }: IProfileForm, ref) =
     return <Card>
         <div className={styles.card}>
             <Input name="firstName" label="First name*"
-                errors={errors}
-                register={register}
-                validationSchema={nameValidationSchema}>
+                errors={errors} register={register} validationSchema={nameValidationSchema}>
             </Input>
 
             <Input name="lastName" label="Last name*"
-                errors={errors}
-                register={register}
-                validationSchema={nameValidationSchema}>
+                errors={errors} register={register} validationSchema={nameValidationSchema}>
             </Input>
 
             <Input name="email" type="email" label="Email"
-                errors={errors}
-                register={register}
-                validationSchema={emailValidationSchema}>
+                errors={errors} register={register} validationSchema={emailValidationSchema}>
             </Input>
         </div>
     </Card>

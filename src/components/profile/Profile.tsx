@@ -44,7 +44,7 @@ const Profile = () => {
         }
     };
 
-    const saveDisabled = !formState || !formState.isValid || !formState.isDirty;
+    const formDisabled = !formState || !formState.isValid || !formState.isDirty;
 
     return <>
         <ToastContainer position="top-right" autoClose={3000} theme="colored" />
@@ -56,13 +56,15 @@ const Profile = () => {
 
             <div className={`${commonStyles.subcontainer} ${styles.subcontainer}`}>
                 <ProfilePicture />
-                
+
                 <ProfileForm user={user as User} formStateHandler={profileFormStateHandler} ref={profileFormRef} />
             </div>
         </div>
 
         <div className={commonStyles.footer}>
-            <Button disabled={saveDisabled} label="Save" clickHandler={onSaveForm} />
+            <div className={commonStyles['footer__wrapper']}>
+                <Button disabled={formDisabled} label="Save" clickHandler={onSaveForm} />
+            </div>
         </div>
     </>;
 }

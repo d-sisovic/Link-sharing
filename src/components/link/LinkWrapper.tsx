@@ -213,6 +213,8 @@ const LinkWrapper = () => {
         setFormValidity(getInitialFormValidity(links));
     }, [isLoading, links]);
 
+    const showIntro = newFirebaseLinks.length === 0 && !isLoading && links.length === 0;
+
     return <>
         <ToastContainer position="top-right" autoClose={3000} theme="colored" />
 
@@ -226,7 +228,7 @@ const LinkWrapper = () => {
             <div className={`${commonStyles.subcontainer} ${!isLoading && links.length !== 0 ? `${styles['subcontainer--links']}` : ''} ${isLoading && `${styles['subcontainer--loader']}`}`}>
                 {isLoading && <Spinner size={4} />}
 
-                {newFirebaseLinks.length === 0 && !isLoading && links.length === 0 && <LinkIntro />}
+                {showIntro && <LinkIntro />}
 
                 {newFirebaseLinks.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={links.length} removeLinkHandler={onRemoveLink} formValidity={formValidity}
                     formValidityHandler={formValidityHandler} links={newFirebaseLinks} />}
@@ -236,8 +238,10 @@ const LinkWrapper = () => {
             </div>
         </div>
 
-        <div className={commonStyles.footer}>
-            <Button disabled={formDisabled} label="Save" clickHandler={onSaveForm} />
+        <div className={`${commonStyles.footer} ${!showIntro ? commonStyles['footer--fixed'] : ''}`}>
+            <div className={commonStyles['footer__wrapper']}>
+                <Button disabled={formDisabled} label="Save" clickHandler={onSaveForm} />
+            </div>
         </div>
     </>;
 }

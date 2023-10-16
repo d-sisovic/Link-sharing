@@ -60,8 +60,8 @@ const Preview = () => {
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
 
       <div className={styles.container}>
-        <div className={styles['container__header']}>
-          {user !== null && <>
+        <div className={styles.header}>
+          {user !== null && <div className={styles['header__wrapper']}>
             <div>
               <Button label="Back to Editor" outlineMode={true} clickHandler={() => onNavigate(`/${RoutePaths.PROFILE}`)} />
             </div>
@@ -69,21 +69,21 @@ const Preview = () => {
             <div>
               <Button label="Share Link" clickHandler={onShareLink} />
             </div>
-          </>}
+          </div>}
         </div>
 
-        <>
-          <div className={styles['container__profile']}>
+        <div className={styles.body}>
+          <div className={styles['body__profile']}>
             <img src={userPreviewData.photoURL} alt="profile image" />
 
-            <h1 className={styles['container__name']}>{userPreviewData.displayName}</h1>
+            <h1 className={styles['body__name']}>{userPreviewData.displayName}</h1>
 
-            <h3 className={styles['container__email']}>{userPreviewData.email}</h3>
+            <h3 className={styles['body__email']}>{userPreviewData.email}</h3>
           </div>
-        </>
 
-        <div className={styles['container__links']}>
-          <PreviewLinkList links={links} />
+          <div className={styles['body__links']}>
+            <PreviewLinkList links={links} />
+          </div>
         </div>
       </div>
     </>

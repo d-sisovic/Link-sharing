@@ -48,7 +48,7 @@ const ProfilePicture = () => {
                     setImageState({ invalid, uploading: false, imageURL: null });
 
                     if (invalid) { return; }
-         
+
                     const docRef = doc(db, Firebase.USERS, (auth.currentUser as User).uid);
                     const imageRef = storageRef(storage, `profile/${user?.email}/profileImage`);
                     const imageURL = await getDownloadURL((await uploadBytes(imageRef, firstFile)).ref);
@@ -70,27 +70,31 @@ const ProfilePicture = () => {
     return <Card>
         <input type="file" name="image" accept=".png,.jpg" className={styles.file} ref={inputFileRef} onChange={handleFileChange} />
 
-        <div className={styles.container} onClick={handleImageUpload}>
+        <div className={styles.container}>
             <h1 className={`${styles.heading}`}>Profile picture</h1>
 
-            <div className={`${styles['container__upload']} ${imageState.imageURL ? styles['container__upload--change'] : ''}`}>
-                {imageState.uploading && <div className={styles['container__upload__progress']}><Spinner size={4} /></div>}
-                <img src={uploadSvg} alt="upload" className={styles['container__upload__image']} />
+            <div className={styles['container__upload']}>
+                <div className={`${styles.upload} ${imageState.imageURL ? styles['upload--change'] : ''}`} onClick={handleImageUpload}>
+                    {imageState.uploading && <div className={styles['upload__progress']}><Spinner size={4} /></div>}
 
-                {!imageState.imageURL && <span className={styles['container__upload__text']}>+ Upload Image</span>}
+                    <img src={uploadSvg} alt="upload" className={styles['upload__image']} />
 
-                {imageState.imageURL && <>
-                    <span className={styles['container__upload__text']}>Change image</span>
-                    <img src={imageState.imageURL} alt="profile" className={styles.profile} />
-                </>}
+                    {!imageState.imageURL && <span className={styles['upload__text']}>+ Upload Image</span>}
+
+                    {imageState.imageURL && <>
+                        <span className={styles['upload__text']}>Change image</span>
+                        <img src={imageState.imageURL} alt="profile" className={styles.profile} />
+                    </>}
+                </div>
+
+                <p className={styles.note}>Image must be below 1024x1024px. Use PNG or JPG format.</p>
+
+                {imageState.invalid && <p className={`${styles.note} ${styles['note--invalid']}`}>
+                    Error uploading image. Image doesn't meet upload criteria or there was some unknown error.
+                </p>}
             </div>
+
         </div>
-
-        {imageState.invalid && <p className={`${styles.note} ${styles['note--invalid']}`}>
-            Error uploading image. Image doesn't meet upload criteria or there was some unknown error.
-        </p>}
-
-        <p className={styles.note}>Image must be below 1024x1024px. Use PNG or JPG format.</p>
     </Card>;
 }
 

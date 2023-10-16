@@ -4,6 +4,7 @@ export interface IInput {
     name: string;
     label: string;
     placeholder?: string;
+    expandRowDesktop?: boolean;
     validationSchema: object;
     errors: FieldErrors<FieldValues>;
     type?: "text" | "password" | "email";
