@@ -4,8 +4,8 @@ export interface IInput {
     name: string;
     label: string;
     placeholder?: string;
-    expandRowDesktop?: boolean;
     validationSchema: object;
+    expandRowDesktop?: boolean;
     errors: FieldErrors<FieldValues>;
     type?: "text" | "password" | "email";
     register: UseFormRegister<FieldValues>;

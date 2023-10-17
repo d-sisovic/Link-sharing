@@ -1,0 +1,35 @@
+@use "../../styles/vars";
+@use "../../styles/breakpoint";
+
+.container {
+    &__phone {
+        display: none;
+    }
+}
+
+@include breakpoint.mq(desktop) {
+    .container {
+        display: flex;
+        background: vars.$dirty-white;
+        gap: vars.$gap-between-object;
+        justify-content: space-between;
+
+        &__body {
+            flex: 1;
+            border-radius: 1.2rem;
+            background: vars.$white;
+        }
+
+        &__phone {
+            width: 100%;
+            display: flex;
+            padding: 2.4rem;
+            max-width: 56rem;
+            min-height: 83.4rem;
+            align-items: center;
+            border-radius: 1.2rem;
+            background: vars.$white;
+            justify-content: center;
+        }
+    }
+}

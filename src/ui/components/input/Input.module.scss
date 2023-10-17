@@ -1,8 +1,23 @@
 @use '../../../styles/vars';
-@use '../../../styles/breakpoint';
 
 .container {
-    label {
+    &--row {
+        gap: 1.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .container__label {
+            font-size: 1.6rem;
+        }
+
+        .container__input {
+            width: 100%;
+            max-width: 34.4rem;
+        }
+    }
+
+    &__label {
         display: block;
         font-size: 1.2rem;
         color: vars.$black;
@@ -66,24 +81,6 @@
                     outline-color: vars.$red;
                 }
             }
-        }
-    }
-}
-
-@include breakpoint.mq(tablet) {
-    .container {
-        gap: 1.6rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        label {
-            font-size: 1.6rem;
-        }
-
-        &__input {
-            width: 100%;
-            max-width: 34.4rem;
         }
     }
 }

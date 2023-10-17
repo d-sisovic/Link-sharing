@@ -3,6 +3,7 @@ import { emailAsyncValidator } from "../../util";
 import Card from "../../ui/components/card/Card";
 import { useForm, useWatch } from "react-hook-form";
 import Input from "../../ui/components/input/Input";
+import { useWindowSize } from "../../hooks/use-window-size";
 import { IProfileForm } from "./ts/models/profile-form.model";
 import { IProfileFormValue } from "./ts/models/profile-form-value.model";
 import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
@@ -26,6 +27,7 @@ const coreEmailValidationSchema = {
 const ProfileForm = forwardRef(({ user, formStateHandler }: IProfileForm, ref) => {
     useImperativeHandle(ref, () => ({ resetForm() { reset(formValues); } }));
 
+    const [width] = useWindowSize();
     const [firstName, lastName] = (user.displayName || ".").split('.');
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,17 +49,19 @@ const ProfileForm = forwardRef(({ user, formStateHandler }: IProfileForm, ref) =
         formStateHandler(formValues as IProfileFormValue, isDirty, isValid);
     }, [formValues, isDirty, isValid, formStateHandler]);
 
+    const matchesDesktopMq = width >= 768;
+
     return <Card>
         <div className={styles.card}>
-            <Input name="firstName" label="First name*"
+            <Input name="firstName" label="First name*" expandRowDesktop={matchesDesktopMq}
                 errors={errors} register={register} validationSchema={nameValidationSchema}>
             </Input>
 
-            <Input name="lastName" label="Last name*"
+            <Input name="lastName" label="Last name*" expandRowDesktop={matchesDesktopMq}
                 errors={errors} register={register} validationSchema={nameValidationSchema}>
             </Input>
 
-            <Input name="email" type="email" label="Email"
+            <Input name="email" type="email" label="Email" expandRowDesktop={matchesDesktopMq}
                 errors={errors} register={register} validationSchema={emailValidationSchema}>
             </Input>
         </div>

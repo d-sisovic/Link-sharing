@@ -1,7 +1,15 @@
 @use "../../styles/vars";
+@use "../../styles/breakpoint";
 
 .container {
     border-radius: 0.8rem;
     background: vars.$white;
-    min-height: calc(100vh - (74px + 3.2rem));
+}
+
+@include breakpoint.mq(desktop) {
+    .container {
+        min-height: 0px;
+        border-radius: 0px;
+        background: transparent;
+    }
 }

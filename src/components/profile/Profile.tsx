@@ -3,6 +3,7 @@ import { toastrConfig } from "../../util";
 import styles from "./Profile.module.scss";
 import auth, { db } from "../../../firebase";
 import ProfilePicture from "./ProfilePicture";
+import PhoneWrapper from "../phone/PhoneWrapper";
 import { doc, updateDoc } from "firebase/firestore";
 import { useCallback, useState, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -38,7 +39,7 @@ const Profile = () => {
 
             (profileFormRef.current as unknown as { resetForm: () => void }).resetForm();
 
-            toast.success('Successfully saved form.', toastrConfig);
+            toast.success('Your changes have been successfully saved.', toastrConfig);
         } catch {
             toast.error('Error saving form. Please try again!', toastrConfig);
         }
@@ -49,23 +50,25 @@ const Profile = () => {
     return <>
         <ToastContainer position="top-right" autoClose={3000} theme="colored" />
 
-        <div className={commonStyles.container}>
-            <h1 className="title">Profile Details</h1>
+        <PhoneWrapper>
+            <div className={commonStyles.container}>
+                <h1 className="title">Profile Details</h1>
 
-            <h3 className="subtitle">Add your details to create a personal touch to your profile.</h3>
+                <h3 className="subtitle">Add your details to create a personal touch to your profile.</h3>
 
-            <div className={`${commonStyles.subcontainer} ${styles.subcontainer}`}>
-                <ProfilePicture />
+                <div className={`${commonStyles.subcontainer} ${styles.subcontainer}`}>
+                    <ProfilePicture />
 
-                <ProfileForm user={user as User} formStateHandler={profileFormStateHandler} ref={profileFormRef} />
+                    <ProfileForm user={user as User} formStateHandler={profileFormStateHandler} ref={profileFormRef} />
+                </div>
             </div>
-        </div>
 
-        <div className={commonStyles.footer}>
-            <div className={commonStyles['footer__wrapper']}>
-                <Button disabled={formDisabled} label="Save" clickHandler={onSaveForm} />
+            <div className={commonStyles.footer}>
+                <div className={commonStyles['footer__wrapper']}>
+                    <Button disabled={formDisabled} label="Save" clickHandler={onSaveForm} />
+                </div>
             </div>
-        </div>
+        </PhoneWrapper>
     </>;
 }
 

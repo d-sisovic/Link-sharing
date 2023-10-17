@@ -41,3 +41,15 @@
         }
     }
 }
+
+@include breakpoint.mq(desktop) {
+    .container {
+        .image {
+            margin-top: 4.25rem;
+        }
+
+        .subtitle {
+            margin-bottom: 4.25rem;
+        }
+    }
+}

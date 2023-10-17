@@ -24,6 +24,7 @@
         .upload {
             display: flex;
             width: 19.3rem;
+            cursor: pointer;
             position: relative;
             color: vars.$purple;
             align-items: center;
@@ -77,9 +78,9 @@
         justify-content: space-between;
 
         &__upload {
-            gap: 2.4rem;
             display: flex;
             align-items: center;
+            gap: vars.$gap-between-object;
         }
     }
 

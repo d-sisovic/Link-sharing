@@ -4,6 +4,7 @@ import auth, { db } from "../../../firebase";
 import styles from "./LinkWrapper.module.scss";
 import { DropResult } from "@hello-pangea/dnd";
 import { UTIL } from "../../ts/enums/util.enum";
+import PhoneWrapper from "../phone/PhoneWrapper";
 import { ToastContainer, toast } from "react-toastify";
 import Button from "../../ui/components/button/Button";
 import { Firebase } from "../../ts/enums/firebase.enum";
@@ -120,11 +121,11 @@ const LinkWrapper = () => {
         const reorderedLinks = reorderLinks(links, result.source.index, result.destination.index);
 
         try {
+            setLinks(previousState => ({ ...previousState, links: reorderedLinks }));
             await Promise.all(reorderedLinks.map(link => deleteLinkFromDb(link.id, userId)));
             await Promise.all(reorderedLinks.map((link, index) => setLinkToDb(link, index, userId)));
-
-            setLinks(previousState => ({ ...previousState, links: reorderedLinks }));
         } catch {
+            setLinks(previousState => ({ ...previousState, links }));
             toast.error('Error reordering links. Please try again!', toastrConfig);
         }
     };
@@ -137,7 +138,7 @@ const LinkWrapper = () => {
             const platform = firstUnusedPlatform.value;
             const id = UTIL.NEW_LINK_ID + previousState.length;
 
-            return [...previousState, { id, platform, index: previousState.length, value: "" }];
+            return [{ id, platform, index: previousState.length, value: "" }, ...previousState];
         });
     };
 
@@ -201,7 +202,6 @@ const LinkWrapper = () => {
 
             toast.success('Link/s successfully created/updated.', toastrConfig);
         } catch (error) {
-            console.log(error);
             setLinks(previousState => ({ isLoading: false, links: previousState.links }));
             toast.error('Error adding link. Please try again!', toastrConfig);
         }
@@ -213,36 +213,38 @@ const LinkWrapper = () => {
         setFormValidity(getInitialFormValidity(links));
     }, [isLoading, links]);
 
-    const showIntro = newFirebaseLinks.length === 0 && !isLoading && links.length === 0;
-
     return <>
         <ToastContainer position="top-right" autoClose={3000} theme="colored" />
 
-        <div className={commonStyles.container}>
-            <h1 className="title">Customize your links</h1>
+        <PhoneWrapper>
+            <div className={commonStyles.container}>
+                <h1 className="title">Customize your links</h1>
 
-            <h3 className="subtitle">Add/edit/remove links below and then share all your profiles with the world!</h3>
+                <h3 className="subtitle">Add/edit/remove links below and then share all your profiles with the world!</h3>
 
-            <Button disabled={platformsDropdown.length === (newFirebaseLinks.length + links.length)} label="+ Add new link" outlineMode={true} clickHandler={onAddLink} />
+                <Button disabled={platformsDropdown.length === (newFirebaseLinks.length + links.length)} label="+ Add new link" outlineMode={true} clickHandler={onAddLink} />
 
-            <div className={`${commonStyles.subcontainer} ${!isLoading && links.length !== 0 ? `${styles['subcontainer--links']}` : ''} ${isLoading && `${styles['subcontainer--loader']}`}`}>
-                {isLoading && <Spinner size={4} />}
+                <div className={`${commonStyles.subcontainer} ${!isLoading && links.length !== 0 ? `${styles['subcontainer--links']}` : ''} ${isLoading && `${styles['subcontainer--loader']}`}`}>
+                    {isLoading && <Spinner size={4} />}
 
-                {showIntro && <LinkIntro />}
+                    {!isLoading && <>
+                        {newFirebaseLinks.length === 0 && links.length === 0 && <LinkIntro />}
 
-                {newFirebaseLinks.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={links.length} removeLinkHandler={onRemoveLink} formValidity={formValidity}
-                    formValidityHandler={formValidityHandler} links={newFirebaseLinks} />}
+                        {newFirebaseLinks.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={links.length} removeLinkHandler={onRemoveLink} formValidity={formValidity}
+                            formValidityHandler={formValidityHandler} links={newFirebaseLinks} />}
 
-                {!isLoading && links.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={0} removeLinkHandler={onRemoveLink}
-                    formValidity={formValidity} formValidityHandler={formValidityHandler} links={links} />}
+                        {links.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={0} removeLinkHandler={onRemoveLink}
+                            formValidity={formValidity} formValidityHandler={formValidityHandler} links={links} />}
+                    </>}
+                </div>
             </div>
-        </div>
 
-        <div className={`${commonStyles.footer} ${!showIntro ? commonStyles['footer--fixed'] : ''}`}>
-            <div className={commonStyles['footer__wrapper']}>
-                <Button disabled={formDisabled} label="Save" clickHandler={onSaveForm} />
+            <div className={commonStyles.footer}>
+                <div className={commonStyles['footer__wrapper']}>
+                    <Button disabled={formDisabled} label="Save" clickHandler={onSaveForm} />
+                </div>
             </div>
-        </div>
+        </PhoneWrapper>
     </>;
 }
 

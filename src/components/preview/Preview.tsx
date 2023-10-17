@@ -28,7 +28,7 @@ const Preview = () => {
   const onShareLink = () => {
     navigator.clipboard.writeText(window.location.href);
 
-    toast.success('Link copied to clipboard.', toastrConfig);
+    toast.success('The link has been copied to your clipboard!', toastrConfig);
   };
 
   const fetchUserPreviewData = useCallback(async () => {

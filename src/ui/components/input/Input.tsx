@@ -1,9 +1,9 @@
 import styles from "./Input.module.scss";
 import { IInput } from "./ts/models/input.model";
 
-const Input = ({ name, type = "text", label, placeholder = "", children, errors, validationSchema, register }: IInput) => {
-    return <div className={styles.container}>
-        <label>{label}</label>
+const Input = ({ name, type = "text", expandRowDesktop, label, placeholder = "", children, errors, validationSchema, register }: IInput) => {
+    return <div className={`${styles.container} ${expandRowDesktop ? styles['container--row'] : ''}`}>
+        <label className={styles['container__label']}>{label}</label>
 
         <div className={`${styles['container__input']} ${errors && errors[name] ? styles['container__input--error'] : ''}`}>
             <span className={styles['container__input__icon']}>{children}</span>

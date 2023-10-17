@@ -42,14 +42,13 @@ export const debounce = (callbackFn: (args: string[]) => void, delay: number) =>
 
 export const toastrConfig = {
   toastId: "custom-id",
-  position: "top-right",
+  position: "bottom-center",
   autoClose: 3000,
-  hideProgressBar: false,
+  hideProgressBar: true,
   closeOnClick: true,
   pauseOnHover: true,
-  draggable: true,
-  progress: undefined,
-  theme: "colored",
+  draggable: false,
+  theme: "dark",
 } as Record<string, string | number | boolean | undefined>;
 
 
