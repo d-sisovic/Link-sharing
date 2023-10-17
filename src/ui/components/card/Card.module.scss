@@ -1,0 +1,7 @@
+@use "../../../styles/vars";
+
+.card {
+    padding: 2rem;
+    border-radius: 1.2rem;
+    background: vars.$dirty-white;
+}

@@ -1,0 +1,90 @@
+@use "../../styles/vars";
+@use "../../styles/global";
+@use "../../styles/breakpoint";
+
+.container {
+    .profile {
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        opacity: 0.3;
+        object-fit: cover;
+        position: absolute;
+        border-radius: 1.2rem;
+    }
+
+    .heading {
+        text-align: left;
+        @extend .subtitle;
+        margin-bottom: 1.6rem;
+    }
+
+    &__upload {
+        .upload {
+            display: flex;
+            width: 19.3rem;
+            cursor: pointer;
+            position: relative;
+            color: vars.$purple;
+            align-items: center;
+            border-radius: 1.2rem;
+            flex-direction: column;
+            justify-content: center;
+            font-weight: vars.$button-weight;
+            padding: 6.1rem 3.8rem 6rem 3.9rem;
+            background: vars.$light-light-purple;
+
+            &--change {
+
+                .container__upload__image,
+                .container__upload__text {
+                    z-index: 2;
+                }
+            }
+
+            &__progress {
+                top: 2rem;
+                right: 2rem;
+                position: absolute;
+            }
+
+            &__text {
+                margin-top: 0.8rem;
+                display: inline-block;
+            }
+        }
+    }
+}
+
+.file {
+    display: none;
+}
+
+.note {
+    font-size: 1.2rem;
+    color: vars.$dark-grey;
+    margin-top: vars.$gap-between-object;
+
+    &--invalid {
+        color: vars.$red;
+    }
+}
+
+@include breakpoint.mq(tablet) {
+    .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        &__upload {
+            display: flex;
+            align-items: center;
+            gap: vars.$gap-between-object;
+        }
+    }
+
+    .note {
+        max-width: 12.7rem;
+    }
+}

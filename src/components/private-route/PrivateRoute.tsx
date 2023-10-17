@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
-import { Routes } from "../../ts/enums/routes.enum";
 import Loading from "../../ui/components/loading/Loading";
+import { RoutePaths } from "../../ts/enums/rout-paths.enum";
 import { useAuthData } from "../../context/AuthContextData";
 
 const PrivateRoute = ({ component }: { component: JSX.Element }) => {
@@ -8,7 +8,7 @@ const PrivateRoute = ({ component }: { component: JSX.Element }) => {
 
   if (isLoading) { return <Loading />; }
 
-  return user ? component : <Navigate to={Routes.LOGIN} replace />
+  return user ? component : <Navigate to={RoutePaths.LOGIN} replace />
 };
 
 export default PrivateRoute;

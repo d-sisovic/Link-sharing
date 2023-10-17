@@ -1,0 +1,91 @@
+@use "../../styles/vars";
+@use "../../styles/breakpoint";
+
+%center-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.container {
+    position: relative;
+
+    .header {
+        min-height: 7.8rem;
+        margin-bottom: 6rem;
+
+        &__wrapper {
+            width: 100%;
+            gap: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.6rem 1.6rem 1.6rem 2.4rem;
+        }
+    }
+
+    .body {
+        &__profile {
+            text-align: center;
+            margin-bottom: 5.6rem;
+
+            img {
+                margin: 0 auto;
+                width: 10.4rem;
+                height: 10.4rem;
+                border-radius: 100%;
+                margin-bottom: 2.5rem;
+                outline: 4px solid vars.$purple;
+            }
+        }
+
+        &__links {
+            @extend %center-content;
+            gap: 2rem;
+        }
+
+        &__name {
+            font-size: 3.2rem;
+            color: vars.$black;
+            margin-bottom: 0.8rem;
+            font-family: "Instrument-Sans-Bold";
+        }
+
+        &__email {
+            font-size: 1.6rem;
+            color: vars.$dark-grey;
+            font-weight: vars.$regular-weight;
+        }
+    }
+}
+
+@include breakpoint.mq(tablet) {
+    .container {
+        .header {
+            padding: 2.4rem;
+            min-height: 35.7rem;
+            background: vars.$purple;
+            border-radius: 0px 0px 3.2rem 3.2rem;
+
+            &__wrapper {
+                width: 100%;
+                margin: 0 auto;
+                border-radius: 1.2rem;
+                background: vars.$white;
+            }
+        }
+
+        .body {
+            left: 50%;
+            top: 24rem;
+            position: absolute;
+            max-width: 34.9rem;
+            border-radius: 2.4rem;
+            padding: 4.8rem 5.6rem;
+            background: vars.$white;
+            transform: translateX(-50%);
+            box-shadow: 0px 0px 32px 0px rgba(0, 0, 0, 0.10);
+        }
+    }
+}

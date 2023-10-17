@@ -1,3 +1,4 @@
 export enum Firebase {
-    COLLECTION = "links"
+    USERS = "users",
+    COLLECTION = "links-"
 }

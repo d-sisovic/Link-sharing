@@ -1,0 +1,49 @@
+@use "../../styles/vars";
+@use "../../styles/breakpoint";
+
+.container {
+    padding: 2.4rem;
+}
+
+.title {
+    margin: vars.$gap-between-object 0;
+}
+
+.subtitle {
+    margin-bottom: 2.65rem;
+}
+
+.subcontainer {
+    border-radius: 0.8rem;
+    margin-top: vars.$gap-between-object;
+}
+
+.footer {
+    padding: 1.6rem;
+    position: relative;
+    background: vars.$white;
+    border-bottom-left-radius: 1.2rem;
+    border-bottom-right-radius: 1.2rem;
+
+    &::before {
+        content: "";
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        height: 1px;
+        position: absolute;
+        background: vars.$light-grey;
+    }
+}
+
+@include breakpoint.mq(tablet) {
+    .container {
+        padding: 4rem;
+    }
+
+    .footer {
+        display: flex;
+        padding: 2.4rem 4rem;
+        justify-content: flex-end;
+    }
+}

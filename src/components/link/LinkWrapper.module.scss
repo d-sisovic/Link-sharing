@@ -1,51 +1,28 @@
 @use "../../styles/vars";
-
-.container {
-    padding: 2.4rem;
-}
-
-.title {
-    margin: 2.4rem 0;
-}
-
-.subtitle {
-    margin-bottom: 2.65rem;
-}
+@use "../../styles/breakpoint";
 
 .subcontainer {
-    display: flex;
-    padding: 2rem;
-    text-align: left;
-    margin-top: 2.4rem;
-    align-items: center;
-    border-radius: 0.8rem;
-    flex-direction: column;
-    justify-content: center;
-    background: vars.$dirty-white;
-
     &--links {
-        gap: 2.4rem;
         padding: 0px;
         display: flex;
         flex-direction: column;
         background: transparent;
+        gap: vars.$gap-between-object;
+    }
+
+    &--loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }
 
-.footer {
-    z-index: 1;
-    bottom: 0px;
-    padding: 1.6rem;
-    position: sticky;
-    background: vars.$white;
+@include breakpoint.mq(desktop) {
+    .subcontainer {
+        &--links {
 
-    &::before {
-        content: "";
-        top: 0px;
-        left: 0px;
-        right: 0px;
-        height: 1px;
-        position: absolute;
-        background: vars.$light-grey;
+            overflow-y: auto;
+            max-height: 47rem;
+        }
     }
 }

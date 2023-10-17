@@ -1,7 +1,23 @@
-@use '../../../styles/vars' as vars;
+@use '../../../styles/vars';
 
 .container {
-    label {
+    &--row {
+        gap: 1.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .container__label {
+            font-size: 1.6rem;
+        }
+
+        .container__input {
+            width: 100%;
+            max-width: 34.4rem;
+        }
+    }
+
+    &__label {
         display: block;
         font-size: 1.2rem;
         color: vars.$black;
@@ -50,6 +66,10 @@
                 outline-color: vars.$purple;
                 box-shadow: 0px 0px 32px 0px rgba(99, 60, 255, 0.25);
             }
+        }
+
+        .input--iconless {
+            padding-left: 1.6rem;
         }
 
         &--error {
