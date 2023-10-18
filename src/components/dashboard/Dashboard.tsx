@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import auth from "../../../firebase";
+import { useDispatch } from "react-redux";
 import styles from "./Dashboard.module.scss";
+import { AppDispatch } from "../../store/store";
 import DashboardWrapper from "./DashboardWrapper";
+import { fetchLinks } from "../../store/link-store";
 import Button from "../../ui/components/button/Button";
 import { RoutePaths } from "../../ts/enums/rout-paths.enum";
 import link from "../../assets/images/icon-links-header.svg";
@@ -14,6 +17,7 @@ import profile from "../../assets/images/icon-profile-details-header.svg";
 const Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handlePreviewClick = () => navigate(RoutePaths.PREVIEW + `/${auth.currentUser?.uid}`);
 
@@ -22,6 +26,10 @@ const Dashboard = () => {
 
     navigate(RoutePaths.LINK);
   }, [navigate, location.pathname]);
+
+  useEffect(() => {
+    dispatch(fetchLinks(auth.currentUser?.uid || ""));
+  }, [dispatch]);
 
   return <div className={styles.container}>
     <nav className={styles.nav}>

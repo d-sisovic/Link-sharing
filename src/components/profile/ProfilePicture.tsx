@@ -3,17 +3,20 @@ import styles from "./ProfilePicture.module.scss";
 import { updateDoc, doc } from "firebase/firestore";
 import { User, updateProfile } from "firebase/auth";
 import auth, { db, storage } from "../../../firebase";
+import { useDispatch, useSelector } from "react-redux";
 import { Firebase } from "../../ts/enums/firebase.enum";
+import { updateProfileURL } from "../../store/auth-store";
 import Spinner from "../../ui/components/spinner/Spinner";
-import { useAuthData } from "../../context/AuthContextData";
+import { AppDispatch, RootState } from "../../store/store";
 import { ChangeEvent, useRef, useState, useEffect } from "react";
 import uploadSvg from "../../assets/images/icon-upload-image.svg";
 import { IProfilePicture } from './ts/models/profile-picture.model';
 import { getDownloadURL, ref as storageRef, uploadBytes } from "firebase/storage";
 
 const ProfilePicture = () => {
-    const { user } = useAuthData();
+    const dispatch = useDispatch<AppDispatch>();
     const inputFileRef = useRef<HTMLInputElement | null>(null);
+    const { user } = useSelector((state: RootState) => state.auth);
     const [imageState, setImageState] = useState<IProfilePicture>({ uploading: true, invalid: false, imageURL: null });
 
     const handleImageUpload = () => {
@@ -26,45 +29,54 @@ const ProfilePicture = () => {
         setImageState({ uploading: false, invalid: false, imageURL: user?.photoURL as string | null });
     }, [user]);
 
+    const handleUploadError = () => {
+        setImageState({ invalid: true, uploading: false, imageURL: null });
+        resetInputFileRef();
+    };
+
     const resetInputFileRef = () => (inputFileRef.current as HTMLInputElement).value = "";
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const reader = new FileReader();
-        const [firstFile] = event.target.files as FileList;
+        try {
+            const reader = new FileReader();
+            const [firstFile] = event.target.files as FileList;
 
-        reader.readAsDataURL(firstFile);
-        reader.onload = event => {
-            setImageState(previousState => ({ ...previousState, uploading: true }));
+            reader.readAsDataURL(firstFile);
+            reader.onload = event => {
+                setImageState(previousState => ({ ...previousState, uploading: true }));
 
-            const image = new Image();
-            image.src = (event.target as FileReader).result as string;
+                const image = new Image();
+                image.src = (event.target as FileReader).result as string;
 
-            image.onload = async () => {
-                try {
-                    const width = image.width;
-                    const height = image.height;
-                    const invalid = height > 1024 || width > 1024;
+                image.onload = async () => {
+                    try {
+                        const width = image.width;
+                        const height = image.height;
+                        const invalid = height > 1024 || width > 1024;
 
-                    setImageState({ invalid, uploading: false, imageURL: null });
+                        setImageState({ invalid, uploading: false, imageURL: null });
 
-                    if (invalid) { return; }
+                        if (invalid) { return; }
 
-                    const docRef = doc(db, Firebase.USERS, (auth.currentUser as User).uid);
-                    const imageRef = storageRef(storage, `profile/${user?.email}/profileImage`);
-                    const imageURL = await getDownloadURL((await uploadBytes(imageRef, firstFile)).ref);
-                    const uploadData = { photoURL: imageURL };
+                        const docRef = doc(db, Firebase.USERS, (auth.currentUser as User).uid);
+                        const imageRef = storageRef(storage, `profile/${user?.email}/profileImage`);
+                        const imageURL = await getDownloadURL((await uploadBytes(imageRef, firstFile)).ref);
+                        const uploadData = { photoURL: imageURL };
 
-                    await updateProfile(auth.currentUser as User, uploadData);
-                    await updateDoc(doc(db, Firebase.USERS, docRef.id), uploadData);
-
-                    setImageState({ invalid: false, uploading: false, imageURL });
-                    resetInputFileRef();
-                } catch (error) {
-                    setImageState({ invalid: true, uploading: false, imageURL: null });
-                    resetInputFileRef();
-                }
+                        await updateProfile(auth.currentUser as User, uploadData);
+                        await updateDoc(doc(db, Firebase.USERS, docRef.id), uploadData);
+                        dispatch(updateProfileURL(uploadData));
+            
+                        setImageState({ invalid: false, uploading: false, imageURL });
+                        resetInputFileRef();
+                    } catch {
+                        handleUploadError();
+                    }
+                };
             };
-        };
+        } catch {
+            handleUploadError();
+        }
     };
 
     return <Card>

@@ -3,24 +3,27 @@ import { toastrConfig } from "../../util";
 import styles from "./Preview.module.scss";
 import PreviewLinkList from "./PreviewLinkList";
 import { doc, getDoc } from "firebase/firestore";
+import { fetchLinks } from "../../store/link-store";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../../ui/components/button/Button";
 import { ToastContainer, toast } from "react-toastify";
 import { Firebase } from "../../ts/enums/firebase.enum";
 import { useEffect, useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../ui/components/loading/Loading";
-import { useAuthData } from "../../context/AuthContextData";
+import { AppDispatch, RootState } from "../../store/store";
 import { RoutePaths } from "../../ts/enums/rout-paths.enum";
-import { useFetchLinks } from "../../hooks/use-fetch-links";
 import { IUserPreview } from "./ts/models/user-preview.model";
 
 const initialUserPreview = { loading: true, email: "", photoURL: "", displayName: "" };
 
 const Preview = () => {
   const navigate = useNavigate();
-  const { user } = useAuthData();
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { links, loading } = useSelector((state: RootState) => state.list);
+  
   const { id: userId } = useParams();
-  const { isLoading: isLoadingLinks, links } = useFetchLinks(userId || "");
   const [userPreviewData, setUserPreviewData] = useState<IUserPreview>(initialUserPreview);
 
   const onNavigate = useCallback((url: string) => navigate(url), [navigate]);
@@ -30,6 +33,10 @@ const Preview = () => {
 
     toast.success('The link has been copied to your clipboard!', toastrConfig);
   };
+
+  useEffect(() => {
+    dispatch(fetchLinks(userId || ""));
+  }, [dispatch, userId]);
 
   const fetchUserPreviewData = useCallback(async () => {
     try {
@@ -53,7 +60,7 @@ const Preview = () => {
     fetchUserPreviewData();
   }, [fetchUserPreviewData]);
 
-  if (isLoadingLinks || userPreviewData.loading) { return <Loading />; }
+  if (loading || userPreviewData.loading) { return <Loading />; }
 
   return (
     <>

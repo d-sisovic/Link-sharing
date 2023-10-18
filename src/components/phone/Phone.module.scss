@@ -1,6 +1,53 @@
+@use "../../styles/vars";
+
+%absolute-center {
+    left: 50%;
+    position: absolute;
+    transform: translateX(-50%);
+}
+
+%overlay-content {
+    width: 100%;
+    padding: 0 3rem;
+    background: vars.$white;
+    max-width: calc(100% - 70px);
+}
+
 .container {
-    display: flex;
     position: relative;
     text-align: center;
-    justify-content: center;
+
+    &__profile {
+        top: 6rem;
+        width: 9.6rem;
+        height: 9.6rem;
+        border-radius: 100%;
+        outline: 4px solid vars.$purple;
+        @extend %absolute-center;
+    }
+
+    &__name {
+        top: 18rem;
+        font-size: 1.8rem;
+        color: vars.$black;
+        font-weight: vars.$button-weight;
+        @extend %overlay-content;
+        @extend %absolute-center;
+    }
+
+    &__email {
+        top: 21rem;
+        @extend %overlay-content;
+        @extend %absolute-center;
+    }
+
+    &__list {
+        gap: 2rem;
+        top: 28rem;
+        display: flex;
+        overflow-y: auto;
+        max-height: 30rem;
+        flex-direction: column;
+        @extend %absolute-center;
+    }
 }
