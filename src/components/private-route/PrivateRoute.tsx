@@ -1,12 +1,13 @@
+import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
+import { RootState } from "../../store/store";
 import Loading from "../../ui/components/loading/Loading";
 import { RoutePaths } from "../../ts/enums/rout-paths.enum";
-import { useAuthData } from "../../context/AuthContextData";
 
 const PrivateRoute = ({ component }: { component: JSX.Element }) => {
-  const { user, isLoading } = useAuthData();
+  const { user, loading } = useSelector((state: RootState) => state.auth);
 
-  if (isLoading) { return <Loading />; }
+  if (loading) { return <Loading />; }
 
   return user ? component : <Navigate to={RoutePaths.LOGIN} replace />
 };

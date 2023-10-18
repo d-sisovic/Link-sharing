@@ -5,11 +5,12 @@ import styles from "./LinkWrapper.module.scss";
 import { DropResult } from "@hello-pangea/dnd";
 import { UTIL } from "../../ts/enums/util.enum";
 import PhoneWrapper from "../phone/PhoneWrapper";
+import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import Button from "../../ui/components/button/Button";
 import { Firebase } from "../../ts/enums/firebase.enum";
 import Spinner from "../../ui/components/spinner/Spinner";
-import { useFetchLinks } from "../../hooks/use-fetch-links";
+import { AppDispatch, RootState } from "../../store/store";
 import { platformsDropdown, toastrConfig } from "../../util";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { IFirebaseLink } from "../../ts/models/firebase-link.model";
@@ -17,6 +18,7 @@ import commonStyles from "../../styles/common/link-profile.module.scss";
 import { AvailablePlatform } from "../../ts/enums/available-platform.enum";
 import { ILinkWrapperFormValidity } from "./ts/models/link-wrapper-form-validity.model";
 import { addDoc, collection, deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore";
+import { filterLinks, setLinks, setLinksLoading, setLinksOnSave } from "../../store/link-store";
 
 const getFormValidityValue = (formValidity: ILinkWrapperFormValidity[], key: keyof ILinkWrapperFormValidity) => {
     return formValidity.map(item => item[key]);
@@ -61,27 +63,6 @@ const getFirebaseRequests = (linksToSave: IFirebaseLink[], userId: string) => {
     });
 };
 
-const getLinksIds = (links: IFirebaseLink[]) => {
-    return links.map(link => link.id);
-};
-
-const getNewLinksToSave = (existingLinks: IFirebaseLink[], linksToSave: IFirebaseLink[]) => {
-    const existingIds = getLinksIds(existingLinks);
-
-    return linksToSave.filter(linkToSave => !existingIds.includes(linkToSave.id));
-};
-
-const getUpdatedLinksToSave = (existingLinks: IFirebaseLink[], linksToSave: IFirebaseLink[]) => {
-    return existingLinks.map(link => linksToSave.find(linkToSave => link.id === linkToSave.id) || link);
-};
-
-const getUpdatedLinkForUI = (existingLinks: IFirebaseLink[], linksToSave: IFirebaseLink[]) => {
-    const newLinks = getNewLinksToSave(existingLinks, linksToSave);
-    const updatedLinks = getUpdatedLinksToSave(existingLinks, linksToSave);
-
-    return [...updatedLinks, ...newLinks];
-};
-
 const getInitialFormValidity = (links: IFirebaseLink[]) => {
     return links.map(link => ({ link, valid: true, dirty: false }));
 };
@@ -112,7 +93,9 @@ const reorderLinks = (links: IFirebaseLink[], startIndex: number, endIndex: numb
 const LinkWrapper = () => {
     const [newFirebaseLinks, setNewLinks] = useState<IFirebaseLink[]>([]);
     const [formValidity, setFormValidity] = useState<ILinkWrapperFormValidity[]>([]);
-    const { isLoading, links, setLinks } = useFetchLinks(auth.currentUser?.uid || "");
+
+    const dispatch = useDispatch<AppDispatch>();
+    const { links, loading } = useSelector((state: RootState) => state.list);
 
     const onDragEnd = async (result: DropResult) => {
         if (!result.destination) { return; }
@@ -121,11 +104,11 @@ const LinkWrapper = () => {
         const reorderedLinks = reorderLinks(links, result.source.index, result.destination.index);
 
         try {
-            setLinks(previousState => ({ ...previousState, links: reorderedLinks }));
+            dispatch(setLinks({ links: reorderedLinks }));
             await Promise.all(reorderedLinks.map(link => deleteLinkFromDb(link.id, userId)));
             await Promise.all(reorderedLinks.map((link, index) => setLinkToDb(link, index, userId)));
         } catch {
-            setLinks(previousState => ({ ...previousState, links }));
+            dispatch(setLinks({ links }));
             toast.error('Error reordering links. Please try again!', toastrConfig);
         }
     };
@@ -182,36 +165,36 @@ const LinkWrapper = () => {
             await deleteLinkFromDb(linkId, userId);
 
             removeFormValidityEntr(linkId);
-            setLinks(previousState => ({ ...previousState, links: getLinkNotMatchingById(previousState.links, linkId) }));
+            dispatch(filterLinks({ linkId }));
 
             toast.success('Link successfully deleted.', toastrConfig);
         } catch {
             toast.error('Error deleting link. Please try again!', toastrConfig);
         }
-    }, [setLinks]);
+    }, [dispatch]);
 
     const onSaveForm = async () => {
-        setLinks(previousState => ({ isLoading: true, links: previousState.links }));
+        dispatch(setLinksLoading({ loading: true }));
 
         try {
             const linksUI = await getUILinksAfterSave(formValidity);
 
             if (newFirebaseLinks.length) { setNewLinks([]); }
 
-            setLinks(previousState => ({ isLoading: false, links: getUpdatedLinkForUI(previousState.links, linksUI) }));
+            dispatch(setLinksOnSave({ loading: false, links: linksUI }));
 
             toast.success('Link/s successfully created/updated.', toastrConfig);
-        } catch (error) {
-            setLinks(previousState => ({ isLoading: false, links: previousState.links }));
+        } catch {
+            dispatch(setLinksLoading({ loading: false }));
             toast.error('Error adding link. Please try again!', toastrConfig);
         }
     };
 
     useEffect(() => {
-        if (isLoading) { return; }
+        if (loading) { return; }
 
         setFormValidity(getInitialFormValidity(links));
-    }, [isLoading, links]);
+    }, [loading, links]);
 
     return <>
         <ToastContainer position="top-right" autoClose={3000} theme="colored" />
@@ -224,10 +207,10 @@ const LinkWrapper = () => {
 
                 <Button disabled={platformsDropdown.length === (newFirebaseLinks.length + links.length)} label="+ Add new link" outlineMode={true} clickHandler={onAddLink} />
 
-                <div className={`${commonStyles.subcontainer} ${!isLoading && links.length !== 0 ? `${styles['subcontainer--links']}` : ''} ${isLoading && `${styles['subcontainer--loader']}`}`}>
-                    {isLoading && <Spinner size={4} />}
+                <div className={`${commonStyles.subcontainer} ${!loading && links.length !== 0 ? `${styles['subcontainer--links']}` : ''} ${loading && `${styles['subcontainer--loader']}`}`}>
+                    {loading && <Spinner size={4} />}
 
-                    {!isLoading && <>
+                    {!loading && <>
                         {newFirebaseLinks.length === 0 && links.length === 0 && <LinkIntro />}
 
                         {newFirebaseLinks.length !== 0 && <LinkList onDragEnd={onDragEnd} baseIndex={links.length} removeLinkHandler={onRemoveLink} formValidity={formValidity}

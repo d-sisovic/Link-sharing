@@ -8,8 +8,10 @@ import { doc, updateDoc } from "firebase/firestore";
 import { useCallback, useState, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import Button from "../../ui/components/button/Button";
+import { useDispatch, useSelector } from "react-redux";
 import { Firebase } from "../../ts/enums/firebase.enum";
-import { useAuthData } from "../../context/AuthContextData";
+import { updateNameEmail } from "../../store/auth-store";
+import { AppDispatch, RootState } from "../../store/store";
 import { IProfileForm } from "./ts/models/profile-form.model";
 import { IProfileState } from "./ts/models/profile-state.model";
 import { User, updateEmail, updateProfile } from "firebase/auth";
@@ -17,7 +19,8 @@ import commonStyles from "../../styles/common/link-profile.module.scss";
 import { IProfileFormValue } from "./ts/models/profile-form-value.model";
 
 const Profile = () => {
-    const { user } = useAuthData();
+    const dispatch = useDispatch<AppDispatch>();
+    const { user } = useSelector((state: RootState) => state.auth);
     const [formState, setFormState] = useState<IProfileState | null>(null);
     const profileFormRef = useRef<React.ForwardRefExoticComponent<IProfileForm & React.RefAttributes<unknown>>>();
 
@@ -36,6 +39,8 @@ const Profile = () => {
             await updateEmail(currentUser, email);
             await updateProfile(currentUser, { displayName });
             await updateDoc(doc(db, Firebase.USERS, docRef.id), { displayName, email });
+
+            dispatch(updateNameEmail({ displayName, email }));
 
             (profileFormRef.current as unknown as { resetForm: () => void }).resetForm();
 
