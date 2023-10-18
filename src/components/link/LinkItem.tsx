@@ -3,29 +3,35 @@ import { platformsDropdown } from "../../util";
 import { UTIL } from "../../ts/enums/util.enum";
 import Card from "../../ui/components/card/Card";
 import Input from "../../ui/components/input/Input";
-import { useEffect, useState, useMemo } from "react";
 import Select from "../../ui/components/select/Select";
 import { ILinkItem } from "./ts/models/link-item.model";
 import linkSvg from "../../assets/images/icon-link.svg";
 import rectangle from "../../assets/images/rectangle.svg";
 import { IPlatform } from "../../ts/models/platform.model";
+import { INPUT_TYPE } from "../../ts/enums/input-type.enum";
+import { useEffect, useState, useMemo, memo, useCallback } from "react";
 import { AvailablePlatform } from "../../ts/enums/available-platform.enum";
-import { Control, FieldValues, UseFormRegister, useForm, useWatch } from "react-hook-form";
+import { Control, FieldError, FieldValues, UseFormRegister, useForm, useWatch } from "react-hook-form";
+
+const linkInputAttribute = { name: "value", label: "Link", placeholder: "e.g. https://www.github.com/johnappleseed", type: INPUT_TYPE.TEXT };
+
+const CardMemo = memo(Card);
 
 const LinkItem = ({ index, link, formValidity, dragProps, removeLinkHandler, formValidityHandler }: ILinkItem) => {
-    const defaultValues = { platform: link.platform, value: link.value };
+    const defaultValues = { platform: link.platform as string, value: link.value };
 
     const [linkValidationSchema, setLinkValidationSchema] = useState({ required: "Required" });
     const { register, resetField, control, formState: { errors, isValid, isDirty } } = useForm({ mode: 'onChange', defaultValues });
 
-    const onRemoveItem = () => {
+    const onRemoveItem = useCallback(() => {
         if (!removeLinkHandler) { return; }
 
         removeLinkHandler(link.id);
-    };
+    }, [link.id, removeLinkHandler]);
 
     const formValues = useWatch({ control });
     const isNewLink = link.id.startsWith(UTIL.NEW_LINK_ID);
+    const linkFieldErrors = errors.value as FieldError;
 
     const platforms = useMemo(() => {
         const usedSavedPlatforms = formValidity.map(item => item.link.platform);
@@ -35,11 +41,23 @@ const LinkItem = ({ index, link, formValidity, dragProps, removeLinkHandler, for
         return [selectedPlatform, ...unusedPlatforms];
     }, [formValidity, formValues.platform]);
 
+    const LinkFieldChildrenMemo = useMemo(() => <img src={linkSvg} alt="link" />, []);
+    const LinkFieldInputFormMemo = useMemo(() => {
+        const registerTyped = register as unknown as UseFormRegister<FieldValues>;
+
+        return { register: registerTyped, errors: linkFieldErrors, validationSchema: linkValidationSchema };
+    }, [linkFieldErrors, linkValidationSchema, register]);
+
+    const SelectMemo = useMemo(() => <Select name="platform" label="Platform" active={link.platform} options={platforms} control={control as unknown as Control<FieldValues, unknown>} />,
+        [control, link.platform, platforms]);
+
+    const InputMemo = useMemo(() => <Input inputAttribute={linkInputAttribute} inputForm={LinkFieldInputFormMemo} children={LinkFieldChildrenMemo} />,
+        [LinkFieldChildrenMemo, LinkFieldInputFormMemo]);
+
     useEffect(() => {
         const patternValidation = {
             pattern: {
                 message: "",
-                // eslint-disable-next-line no-useless-escape
                 value: new RegExp(`(${formValues.platform as AvailablePlatform}.{1,90})`)
             }
         };
@@ -59,26 +77,26 @@ const LinkItem = ({ index, link, formValidity, dragProps, removeLinkHandler, for
         formValidityHandler([platform, value] as [AvailablePlatform, string], isValid, isDirty, link.id);
     }, [formValues, isDirty, isValid, link.id, formValidityHandler]);
 
-    return <Card>
-        <div className={styles.header}>
-            <p className={styles['header__id']}  {...dragProps}>
-                {!isNewLink && <img src={rectangle} alt="rectangle" className={styles['header__id__img']} />}
-                Link #{index + 1}
-            </p>
+    const CardChildrenMemo = useMemo(() => {
+        return <>
+            <div className={styles.header}>
+                <p className={styles['header__id']}  {...dragProps}>
+                    {!isNewLink && <img src={rectangle} alt="rectangle" className={styles['header__id__img']} />}
+                    Link #{index + 1}
+                </p>
 
-            <p className={styles['header__remove']} onClick={onRemoveItem}>Remove</p>
-        </div>
+                <p className={styles['header__remove']} onClick={onRemoveItem}>Remove</p>
+            </div>
 
-        <div className={styles.body}>
-            <Select name="platform" label="Platform" active={link.platform} options={platforms} control={control as unknown as Control<FieldValues, unknown>} />
+            <div className={styles.body}>
+                {SelectMemo}
 
-            <Input name="value" label="Link" placeholder="e.g. https://www.github.com/johnappleseed"
-                errors={errors} register={register as unknown as UseFormRegister<FieldValues>}
-                validationSchema={linkValidationSchema}>
-                <img src={linkSvg} alt="link" />
-            </Input>
-        </div>
-    </Card>;
+                {InputMemo}
+            </div>
+        </>
+    }, [InputMemo, SelectMemo, dragProps, index, isNewLink, onRemoveItem]);
+
+    return <CardMemo children={CardChildrenMemo} />;
 }
 
 export default LinkItem;

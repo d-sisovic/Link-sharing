@@ -1,12 +1,17 @@
 import styles from "./ProfileForm.module.scss";
 import { emailAsyncValidator } from "../../util";
 import Card from "../../ui/components/card/Card";
-import { useForm, useWatch } from "react-hook-form";
 import Input from "../../ui/components/input/Input";
+import { INPUT_TYPE } from "../../ts/enums/input-type.enum";
 import { useWindowSize } from "../../hooks/use-window-size";
 import { IProfileForm } from "./ts/models/profile-form.model";
+import { FieldError, useForm, useWatch } from "react-hook-form";
 import { IProfileFormValue } from "./ts/models/profile-form-value.model";
-import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle, useMemo, memo } from "react";
+
+const emailInputAttribute = { name: "email", label: "Email", type: INPUT_TYPE.EMAIL, placeholder: "" };
+const lastNameInputAttribute = { name: "lastName", label: "Last name*", type: INPUT_TYPE.TEXT, placeholder: "" };
+const firstNameInputAttribute = { name: "firstName", label: "First name*", type: INPUT_TYPE.TEXT, placeholder: "" };
 
 const nameValidationSchema = {
     required: "Required",
@@ -24,10 +29,13 @@ const coreEmailValidationSchema = {
     }
 };
 
+const CardMemo = memo(Card);
+
 const ProfileForm = forwardRef(({ user, formStateHandler }: IProfileForm, ref) => {
     useImperativeHandle(ref, () => ({ resetForm() { reset(formValues); } }));
 
     const [width] = useWindowSize();
+    const matchesDesktopMq = width >= 768;
     const [firstName, lastName] = (user.displayName || ".").split('.');
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,6 +44,26 @@ const ProfileForm = forwardRef(({ user, formStateHandler }: IProfileForm, ref) =
     const { register, reset, control, formState: { errors, isValid, isDirty } } = useForm({ mode: 'onChange', defaultValues });
 
     const formValues = useWatch({ control });
+
+    const emailErrors = errors[emailInputAttribute.name] as FieldError;
+    const lastNameErrors = errors[lastNameInputAttribute.name] as FieldError;
+    const firstNameErrors = errors[firstNameInputAttribute.name] as FieldError;
+
+    const LastNameFieldInputFormMemo = useMemo(() => ({ register, errors: lastNameErrors, validationSchema: nameValidationSchema }), [lastNameErrors, register]);
+    const FirstNameFieldInputFormMemo = useMemo(() => ({ register, errors: firstNameErrors, validationSchema: nameValidationSchema }), [firstNameErrors, register]);
+    const EmailFieldInputFormMemo = useMemo(() => ({ register, errors: emailErrors, validationSchema: emailValidationSchema }), [emailErrors, emailValidationSchema, register]);
+
+    const FirstNameInputMemo = useMemo(() => <Input inputAttribute={firstNameInputAttribute}
+        expandRowDesktop={matchesDesktopMq} inputForm={FirstNameFieldInputFormMemo}>
+    </Input>, [FirstNameFieldInputFormMemo, matchesDesktopMq]);
+
+    const LastNameInputMemo = useMemo(() => <Input inputAttribute={lastNameInputAttribute}
+        expandRowDesktop={matchesDesktopMq} inputForm={LastNameFieldInputFormMemo}>
+    </Input>, [LastNameFieldInputFormMemo, matchesDesktopMq]);
+
+    const EmailInputMemo = useMemo(() => <Input inputAttribute={emailInputAttribute}
+        expandRowDesktop={matchesDesktopMq} inputForm={EmailFieldInputFormMemo}>
+    </Input>, [EmailFieldInputFormMemo, matchesDesktopMq]);
 
     useEffect(() => {
         if (!isDirty) { return; }
@@ -49,23 +77,15 @@ const ProfileForm = forwardRef(({ user, formStateHandler }: IProfileForm, ref) =
         formStateHandler(formValues as IProfileFormValue, isDirty, isValid);
     }, [formValues, isDirty, isValid, formStateHandler]);
 
-    const matchesDesktopMq = width >= 768;
+    const ContentMemo = useMemo(() => <div className={styles.card}>
+        {FirstNameInputMemo}
 
-    return <Card>
-        <div className={styles.card}>
-            <Input name="firstName" label="First name*" expandRowDesktop={matchesDesktopMq}
-                errors={errors} register={register} validationSchema={nameValidationSchema}>
-            </Input>
+        {LastNameInputMemo}
 
-            <Input name="lastName" label="Last name*" expandRowDesktop={matchesDesktopMq}
-                errors={errors} register={register} validationSchema={nameValidationSchema}>
-            </Input>
+        {EmailInputMemo}
+    </div>, [EmailInputMemo, FirstNameInputMemo, LastNameInputMemo]);
 
-            <Input name="email" type="email" label="Email" expandRowDesktop={matchesDesktopMq}
-                errors={errors} register={register} validationSchema={emailValidationSchema}>
-            </Input>
-        </div>
-    </Card>
+    return <CardMemo children={ContentMemo} />;
 });
 
 export default ProfileForm;

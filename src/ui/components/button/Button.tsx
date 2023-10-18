@@ -5,12 +5,13 @@ const Button = ({ disabled = false, outlineMode = false, label, clickHandler }: 
   const disabledStyle = disabled ? styles['button--disabled'] : '';
   const outlineStyle = outlineMode ? styles['button--outline'] : '';
 
-  return <button className={`${styles['button']} ${disabledStyle} ${outlineStyle}`}
-    onClick={(event) => {
-      event.preventDefault();
+  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
 
-      clickHandler();
-    }} disabled={disabled}>
+    clickHandler();
+  };
+
+  return <button className={`${styles['button']} ${disabledStyle} ${outlineStyle}`} onClick={handleButtonClick} disabled={disabled}>
     {label}
   </button>
 }

@@ -3,7 +3,7 @@ import auth from "../../../firebase";
 import { useDispatch } from "react-redux";
 import styles from "./Dashboard.module.scss";
 import { AppDispatch } from "../../store/store";
-import DashboardWrapper from "./DashboardWrapper";
+import DashboardContent from "./DashboardContent";
 import { fetchLinks } from "../../store/link-store";
 import Button from "../../ui/components/button/Button";
 import { RoutePaths } from "../../ts/enums/rout-paths.enum";
@@ -19,7 +19,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
-  const handlePreviewClick = () => navigate(RoutePaths.PREVIEW + `/${auth.currentUser?.uid}`);
+  const currentUserId = auth.currentUser?.uid || "";
+
+  const handlePreviewClick = () => navigate(RoutePaths.PREVIEW + `/${currentUserId}`);
 
   useEffect(() => {
     if (location.pathname !== RoutePaths.HOME) { return; }
@@ -28,8 +30,8 @@ const Dashboard = () => {
   }, [navigate, location.pathname]);
 
   useEffect(() => {
-    dispatch(fetchLinks(auth.currentUser?.uid || ""));
-  }, [dispatch]);
+    dispatch(fetchLinks(currentUserId));
+  }, [currentUserId, dispatch]);
 
   return <div className={styles.container}>
     <nav className={styles.nav}>
@@ -63,10 +65,9 @@ const Dashboard = () => {
     </nav>
 
     <main className={styles.main}>
-      <DashboardWrapper></DashboardWrapper>
+      <DashboardContent />
     </main>
   </div>;
 }
 
 export default Dashboard;
-

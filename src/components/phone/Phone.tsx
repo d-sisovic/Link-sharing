@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import styles from "./Phone.module.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -7,6 +8,8 @@ import phoneSvg from "../../assets/images/illustration-phone-mockup.svg";
 const Phone = () => {
     const { user } = useSelector((state: RootState) => state.auth);
     const { links, loading } = useSelector((state: RootState) => state.list);
+
+    const PreviewLinkListMemo = useMemo(() => <PreviewLinkList links={links} previewMode={true} />, [links]);
 
     return <div className={styles.container}>
         <img src={phoneSvg} alt="phone" />
@@ -20,7 +23,7 @@ const Phone = () => {
         </>}
 
         {!loading && <div className={styles['container__list']}>
-            <PreviewLinkList links={links} previewMode={true} />
+            {PreviewLinkListMemo}
         </div>}
     </div>;
 };

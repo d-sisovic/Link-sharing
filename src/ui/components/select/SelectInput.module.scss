@@ -1,0 +1,29 @@
+@use "../../../styles/vars";
+
+.container {
+    width: 100%;
+    gap: 1.2rem;
+    display: flex;
+    color: vars.$black;
+    align-items: center;
+    border-radius: 0.8rem;
+    padding: 1.2rem 1.6rem;
+    background: vars.$white;
+    justify-content: space-between;
+    outline: 1px solid vars.$light-grey;
+
+    &__value {
+        gap: 1.2rem;
+        align-items: center;
+        display: inline-flex;
+    }
+    
+    &--expanded {
+        outline: 1px solid vars.$purple;
+        box-shadow: 0px 0px 32px 0px rgba(99, 60, 255, 0.25);
+    }
+}
+
+.chevron--up {
+    transform: rotate(-180deg);
+}

@@ -22,7 +22,6 @@ const router = createBrowserRouter([
       {
         path: RoutePaths.HOME,
         element: <PrivateRoute component={<Dashboard />} />,
-        errorElement: <NotFoundPage />,
         children: [
           {
             path: RoutePaths.LINK,
@@ -46,7 +45,8 @@ const router = createBrowserRouter([
         path: RoutePaths.REGISTER,
         element: <Register />
       }
-    ]
+    ],
+    errorElement: <NotFoundPage />
   }
 ]);
 

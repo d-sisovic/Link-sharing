@@ -8,12 +8,12 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "../../ui/components/button/Button";
 import { ToastContainer, toast } from "react-toastify";
 import { Firebase } from "../../ts/enums/firebase.enum";
-import { useEffect, useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../ui/components/loading/Loading";
 import { AppDispatch, RootState } from "../../store/store";
 import { RoutePaths } from "../../ts/enums/rout-paths.enum";
 import { IUserPreview } from "./ts/models/user-preview.model";
+import { useEffect, useCallback, useState, useMemo } from "react";
 
 const initialUserPreview = { loading: true, email: "", photoURL: "", displayName: "" };
 
@@ -21,27 +21,22 @@ const Preview = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
-  const { links, loading } = useSelector((state: RootState) => state.list);
-  
+  const { links } = useSelector((state: RootState) => state.list);
+
   const { id: userId } = useParams();
   const [userPreviewData, setUserPreviewData] = useState<IUserPreview>(initialUserPreview);
 
   const onNavigate = useCallback((url: string) => navigate(url), [navigate]);
 
-  const onShareLink = () => {
+  const onShareLink = useCallback(() => {
     navigator.clipboard.writeText(window.location.href);
 
     toast.success('The link has been copied to your clipboard!', toastrConfig);
-  };
-
-  useEffect(() => {
-    dispatch(fetchLinks(userId || ""));
-  }, [dispatch, userId]);
+  }, []);
 
   const fetchUserPreviewData = useCallback(async () => {
     try {
-      const documentReference = doc(db, Firebase.USERS, userId as string);
-      const coreUserData = (await getDoc(documentReference)).data();
+      const coreUserData = (await getDoc(doc(db, Firebase.USERS, userId as string))).data();
 
       if (!coreUserData) {
         onNavigate(`/${RoutePaths.LOGIN}`);
@@ -56,26 +51,31 @@ const Preview = () => {
     }
   }, [userId, onNavigate]);
 
+  const PreviewLinkListMemo = useMemo(() => <PreviewLinkList links={links} />, [links]);
+  const ToastrMemo = useMemo(() => <ToastContainer position="top-right" autoClose={3000} theme="colored" />, []);
+  const ShareLinkButtonMemo = useMemo(() => <Button label="Share Link" clickHandler={onShareLink} />, [onShareLink]);
+  const BackToEditorButtonMemo = useMemo(() => <Button label="Back to Editor" outlineMode={true} clickHandler={() => onNavigate(`/${RoutePaths.PROFILE}`)} />, [onNavigate]);
+
+  useEffect(() => {
+    dispatch(fetchLinks(userId || ""));
+  }, [dispatch, userId]);
+
   useEffect(() => {
     fetchUserPreviewData();
   }, [fetchUserPreviewData]);
 
-  if (loading || userPreviewData.loading) { return <Loading />; }
+  if (userPreviewData.loading) { return <Loading />; }
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+      {ToastrMemo}
 
       <div className={styles.container}>
         <div className={styles.header}>
           {user !== null && <div className={styles['header__wrapper']}>
-            <div>
-              <Button label="Back to Editor" outlineMode={true} clickHandler={() => onNavigate(`/${RoutePaths.PROFILE}`)} />
-            </div>
+            <div>{BackToEditorButtonMemo}</div>
 
-            <div>
-              <Button label="Share Link" clickHandler={onShareLink} />
-            </div>
+            <div>{ShareLinkButtonMemo}</div>
           </div>}
         </div>
 
@@ -88,9 +88,7 @@ const Preview = () => {
             <h3 className={styles['body__email']}>{userPreviewData.email}</h3>
           </div>
 
-          <div className={styles['body__links']}>
-            <PreviewLinkList links={links} />
-          </div>
+          <div className={styles['body__links']}>{PreviewLinkListMemo}</div>
         </div>
       </div>
     </>

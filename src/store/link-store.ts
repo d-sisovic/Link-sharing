@@ -8,14 +8,12 @@ import { getDocs, query, collection, orderBy } from 'firebase/firestore';
 
 const initialState = { loading: true, links: [] } as { loading: boolean; links: IFirebaseLink[] };
 
-const getLinksIds = (links: IFirebaseLink[]) => {
+const getAllLinkIds = (links: IFirebaseLink[]) => {
   return links.map(link => link.id);
 };
 
-const getNewLinksToSave = (existingLinks: IFirebaseLink[], linksToSave: IFirebaseLink[]) => {
-  const existingIds = getLinksIds(existingLinks);
-
-  return linksToSave.filter(linkToSave => !existingIds.includes(linkToSave.id));
+const getNewLinksToSave = (links: IFirebaseLink[], existingIds: string[]) => {
+  return links.filter(link => !existingIds.includes(link.id));
 };
 
 const getUpdatedLinksToSave = (existingLinks: IFirebaseLink[], linksToSave: IFirebaseLink[]) => {
@@ -30,7 +28,8 @@ export const linksSlice = createSlice({
       const { links } = action.payload;
       const { links: existingLinks } = state;
 
-      const newLinks = getNewLinksToSave(existingLinks, links);
+      const allLinkIds = getAllLinkIds(existingLinks);
+      const newLinks = getNewLinksToSave(links, allLinkIds);
       const updatedLinks = getUpdatedLinksToSave(existingLinks, links);
 
       state.loading = false;

@@ -1,7 +1,7 @@
 @use "../../styles/vars";
 @use "../../styles/breakpoint";
 
-.subcontainer {
+.container {
     &--links {
         padding: 0px;
         display: flex;
@@ -18,7 +18,7 @@
 }
 
 @include breakpoint.mq(desktop) {
-    .subcontainer {
+    .container {
         &--links {
 
             overflow-y: auto;

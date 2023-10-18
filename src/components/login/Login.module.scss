@@ -1,30 +1,33 @@
 @use "../../styles/vars";
 @use "../../styles/breakpoint";
 
-.navigate {
-    cursor: pointer;
-    text-align: center;
-
-    &--highlight {
-        color: vars.$purple;
-    }
-}
-
-.info {
-    font-size: 1.2rem;
-    color: vars.$dark-grey;
-}
-
-.container {
+.form {
     display: flex;
     flex-direction: column;
     gap: vars.$gap-between-object;
+
+    &__navigate {
+        cursor: pointer;
+        text-align: center;
+    
+        &--highlight {
+            color: vars.$purple;
+        }
+    }
+
+    &__validation__text {
+        font-size: 1.2rem;
+        color: vars.$dark-grey;
+    }
 }
 
 @include breakpoint.mq(tablet) {
-    .navigate {
-        gap: 0.4rem;
-        display: inline-flex;
-        justify-content: center;
+    .form {
+        &__navigate {
+            gap: 0.4rem;
+            display: inline-flex;
+            justify-content: center;
+        }
     }
 }
+
