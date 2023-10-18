@@ -39,6 +39,7 @@
 @include breakpoint.mq(tablet) {
     .container {
         padding: 4rem;
+        padding-bottom: 2.9rem;
     }
 
     .footer {

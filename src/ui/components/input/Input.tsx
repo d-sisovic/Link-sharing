@@ -1,16 +1,18 @@
+import { useMemo } from "react";
+import InputField from "./InputField";
 import styles from "./Input.module.scss";
 import { IInput } from "./ts/models/input.model";
 
-const Input = ({ name, type = "text", expandRowDesktop, label, placeholder = "", children, errors, validationSchema, register }: IInput) => {
+const Input = (props: IInput) => {
+    const { expandRowDesktop, inputAttribute } = props;
+    const { label } = inputAttribute;
+
+    const InputFieldMemo = useMemo(() => <InputField {...props} />, [props]);
+
     return <div className={`${styles.container} ${expandRowDesktop ? styles['container--row'] : ''}`}>
         <label className={styles['container__label']}>{label}</label>
 
-        <div className={`${styles['container__input']} ${errors && errors[name] ? styles['container__input--error'] : ''}`}>
-            <span className={styles['container__input__icon']}>{children}</span>
-            <input type={type} placeholder={placeholder} {...register(name, validationSchema)} className={`${!children ? styles['input--iconless'] : ''}`} />
-
-            {errors && errors[name] && <span className={styles['container__input__error']}>{errors[name]?.message as string}</span>}
-        </div>
+        {InputFieldMemo}
     </div>
 }
 

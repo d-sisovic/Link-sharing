@@ -30,7 +30,7 @@
         top: 18rem;
         font-size: 1.8rem;
         color: vars.$black;
-        font-weight: vars.$button-weight;
+        font-weight: vars.$weight-600;
         @extend %overlay-content;
         @extend %absolute-center;
     }

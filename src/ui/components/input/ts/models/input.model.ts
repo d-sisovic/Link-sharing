@@ -1,14 +1,9 @@
-import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
+import { IInputForm } from "./input-form.model";
+import { IInputAttribute } from "./input-attribute.model";
 
 export interface IInput {
-    name: string;
-    label: string;
-    placeholder?: string;
-    validationSchema: object;
-    expandRowDesktop?: boolean;
-    errors: FieldErrors<FieldValues>;
-    type?: "text" | "password" | "email";
-    register: UseFormRegister<FieldValues>;
-
+    inputForm: IInputForm;
     children: React.ReactNode;
+    expandRowDesktop?: boolean;
+    inputAttribute: IInputAttribute;
 }

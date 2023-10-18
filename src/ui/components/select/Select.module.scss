@@ -1,9 +1,5 @@
 @use "../../../styles/vars";
 
-.chevron--up {
-    transform: rotate(-180deg);
-}
-
 .container {
     cursor: pointer;
     position: relative;
@@ -13,72 +9,5 @@
         font-size: 1.2rem;
         color: vars.$black;
         margin-bottom: 0.4rem;
-    }
-}
-
-.subcontainer {
-    width: 100%;
-    gap: 1.2rem;
-    display: flex;
-    color: vars.$black;
-    align-items: center;
-    border-radius: 0.8rem;
-    padding: 1.2rem 1.6rem;
-    background: vars.$white;
-    justify-content: space-between;
-    outline: 1px solid vars.$light-grey;
-
-    &__value {
-        gap: 1.2rem;
-        align-items: center;
-        display: inline-flex;
-    }
-    
-    &--expanded {
-        outline: 1px solid vars.$purple;
-        box-shadow: 0px 0px 32px 0px rgba(99, 60, 255, 0.25);
-    }
-}
-
-.options {
-    left: 0px;
-    right: 0px;
-    z-index: 2;
-    overflow-x: auto;
-    max-height: 40vh;
-    position: absolute;
-    border-radius: 0.8rem;
-    padding: 1.2rem 1.6rem;
-    background: vars.$white;
-    top: calc(100% + 0.8rem);
-    outline: 1px solid vars.$light-grey;
-    box-shadow: 0px 0px 32px 0px rgba(0, 0, 0, 0.10);
-}
-
-.item {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-
-    &__option {
-        gap: 1.2rem;
-        align-items: center;
-        display: inline-flex;
-
-        &--selected {
-            color: vars.$purple;
-
-            img {
-                filter: brightness(0) saturate(100%) invert(23%) sepia(30%) saturate(7219%) hue-rotate(246deg) brightness(102%) contrast(106%);
-            }
-        }
-    }
-
-    &__line {
-        height: 1px;
-        width: 100%;
-        display: block;
-        margin: 1.2rem 0px;
-        background: vars.$light-grey;
     }
 }

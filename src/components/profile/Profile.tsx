@@ -5,18 +5,20 @@ import auth, { db } from "../../../firebase";
 import ProfilePicture from "./ProfilePicture";
 import PhoneWrapper from "../phone/PhoneWrapper";
 import { doc, updateDoc } from "firebase/firestore";
-import { useCallback, useState, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import Button from "../../ui/components/button/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { Firebase } from "../../ts/enums/firebase.enum";
-import { updateNameEmail } from "../../store/auth-store";
+import { updateUserData } from "../../store/auth-store";
 import { AppDispatch, RootState } from "../../store/store";
 import { IProfileForm } from "./ts/models/profile-form.model";
 import { IProfileState } from "./ts/models/profile-state.model";
 import { User, updateEmail, updateProfile } from "firebase/auth";
+import { useCallback, useState, useRef, useMemo, memo } from "react";
 import commonStyles from "../../styles/common/link-profile.module.scss";
 import { IProfileFormValue } from "./ts/models/profile-form-value.model";
+
+const PhoneWrapperMemo = memo(PhoneWrapper);
 
 const Profile = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -28,19 +30,18 @@ const Profile = () => {
         setFormState(previousState => ({ ...previousState, formValues, isDirty, isValid }));
     }, []);
 
-    const onSaveForm = async () => {
+    const onSaveForm = useCallback(async () => {
         const { firstName, lastName, email } = (formState as IProfileState).formValues;
 
         try {
             const currentUser = auth.currentUser as User;
             const displayName = `${firstName}.${lastName}`;
-            const docRef = doc(db, Firebase.USERS, currentUser.uid);
 
             await updateEmail(currentUser, email);
             await updateProfile(currentUser, { displayName });
-            await updateDoc(doc(db, Firebase.USERS, docRef.id), { displayName, email });
+            await updateDoc(doc(db, Firebase.USERS, doc(db, Firebase.USERS, currentUser.uid).id), { displayName, email });
 
-            dispatch(updateNameEmail({ displayName, email }));
+            dispatch(updateUserData({ displayName, email }));
 
             (profileFormRef.current as unknown as { resetForm: () => void }).resetForm();
 
@@ -48,33 +49,37 @@ const Profile = () => {
         } catch {
             toast.error('Error saving form. Please try again!', toastrConfig);
         }
-    };
+    }, [dispatch, formState]);
 
     const formDisabled = !formState || !formState.isValid || !formState.isDirty;
 
-    return <>
-        <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+    const ProfilePictureMemo = useMemo(() => <ProfilePicture />, []);
+    const ProfileFormMemo = useMemo(() => <ProfileForm user={user as User}
+        formStateHandler={profileFormStateHandler} ref={profileFormRef} />, [profileFormStateHandler, user]);
+    const ToastrMemo = useMemo(() => <ToastContainer position="top-right" autoClose={3000} theme="colored" />, []);
+    const ButtonMemo = useMemo(() => <Button disabled={formDisabled} label="Save" clickHandler={onSaveForm} />, [formDisabled, onSaveForm]);
 
-        <PhoneWrapper>
-            <div className={commonStyles.container}>
-                <h1 className="title">Profile Details</h1>
+    const PhoneWrapperChildren = useMemo(() => <>
+        {ToastrMemo}
 
-                <h3 className="subtitle">Add your details to create a personal touch to your profile.</h3>
+        <div className={commonStyles.container}>
+            <h1 className="title">Profile Details</h1>
 
-                <div className={`${commonStyles.subcontainer} ${styles.subcontainer}`}>
-                    <ProfilePicture />
+            <h3 className="subtitle">Add your details to create a personal touch to your profile.</h3>
 
-                    <ProfileForm user={user as User} formStateHandler={profileFormStateHandler} ref={profileFormRef} />
-                </div>
+            <div className={`${commonStyles.subcontainer} ${styles.subcontainer}`}>
+                {ProfilePictureMemo}
+
+                {ProfileFormMemo}
             </div>
+        </div>
 
-            <div className={commonStyles.footer}>
-                <div className={commonStyles['footer__wrapper']}>
-                    <Button disabled={formDisabled} label="Save" clickHandler={onSaveForm} />
-                </div>
-            </div>
-        </PhoneWrapper>
-    </>;
+        <div className={commonStyles.footer}>
+            <div className={commonStyles['footer__wrapper']}>{ButtonMemo}</div>
+        </div>
+    </>, [ButtonMemo, ProfileFormMemo, ProfilePictureMemo, ToastrMemo]);
+
+    return <PhoneWrapperMemo children={PhoneWrapperChildren} />;
 }
 
 export default Profile;

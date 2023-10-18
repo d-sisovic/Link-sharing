@@ -5,11 +5,10 @@ import { User, updateProfile } from "firebase/auth";
 import auth, { db, storage } from "../../../firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { Firebase } from "../../ts/enums/firebase.enum";
-import { updateProfileURL } from "../../store/auth-store";
-import Spinner from "../../ui/components/spinner/Spinner";
+import { updateUserData } from "../../store/auth-store";
+import ProfilePictureUpload from "./ProfilePictureUpload";
 import { AppDispatch, RootState } from "../../store/store";
 import { ChangeEvent, useRef, useState, useEffect } from "react";
-import uploadSvg from "../../assets/images/icon-upload-image.svg";
 import { IProfilePicture } from './ts/models/profile-picture.model';
 import { getDownloadURL, ref as storageRef, uploadBytes } from "firebase/storage";
 
@@ -27,7 +26,7 @@ const ProfilePicture = () => {
 
     useEffect(() => {
         setImageState({ uploading: false, invalid: false, imageURL: user?.photoURL as string | null });
-    }, [user]);
+    }, [user?.photoURL]);
 
     const handleUploadError = () => {
         setImageState({ invalid: true, uploading: false, imageURL: null });
@@ -35,6 +34,31 @@ const ProfilePicture = () => {
     };
 
     const resetInputFileRef = () => (inputFileRef.current as HTMLInputElement).value = "";
+
+    const handleImageOnload = async (firstFile: File, image: HTMLImageElement) => {
+        try {
+            const width = image.width;
+            const height = image.height;
+            const invalid = height > 1024 || width > 1024;
+
+            setImageState({ invalid, uploading: false, imageURL: null });
+
+            if (invalid) { return; }
+
+            const imageRef = storageRef(storage, `profile/${user?.email}/profileImage`);
+            const imageURL = await getDownloadURL((await uploadBytes(imageRef, firstFile)).ref);
+            const uploadData = { photoURL: imageURL };
+
+            await updateProfile(auth.currentUser as User, uploadData);
+            await updateDoc(doc(db, Firebase.USERS, doc(db, Firebase.USERS, (auth.currentUser as User).uid).id), uploadData);
+            dispatch(updateUserData(uploadData));
+
+            setImageState({ invalid: false, uploading: false, imageURL });
+            resetInputFileRef();
+        } catch {
+            handleUploadError();
+        }
+    };
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         try {
@@ -46,33 +70,9 @@ const ProfilePicture = () => {
                 setImageState(previousState => ({ ...previousState, uploading: true }));
 
                 const image = new Image();
+
                 image.src = (event.target as FileReader).result as string;
-
-                image.onload = async () => {
-                    try {
-                        const width = image.width;
-                        const height = image.height;
-                        const invalid = height > 1024 || width > 1024;
-
-                        setImageState({ invalid, uploading: false, imageURL: null });
-
-                        if (invalid) { return; }
-
-                        const docRef = doc(db, Firebase.USERS, (auth.currentUser as User).uid);
-                        const imageRef = storageRef(storage, `profile/${user?.email}/profileImage`);
-                        const imageURL = await getDownloadURL((await uploadBytes(imageRef, firstFile)).ref);
-                        const uploadData = { photoURL: imageURL };
-
-                        await updateProfile(auth.currentUser as User, uploadData);
-                        await updateDoc(doc(db, Firebase.USERS, docRef.id), uploadData);
-                        dispatch(updateProfileURL(uploadData));
-            
-                        setImageState({ invalid: false, uploading: false, imageURL });
-                        resetInputFileRef();
-                    } catch {
-                        handleUploadError();
-                    }
-                };
+                image.onload = async () => await handleImageOnload(firstFile, image);
             };
         } catch {
             handleUploadError();
@@ -83,21 +83,10 @@ const ProfilePicture = () => {
         <input type="file" name="image" accept=".png,.jpg" className={styles.file} ref={inputFileRef} onChange={handleFileChange} />
 
         <div className={styles.container}>
-            <h1 className={`${styles.heading}`}>Profile picture</h1>
+            <h1 className={styles.heading}>Profile picture</h1>
 
-            <div className={styles['container__upload']}>
-                <div className={`${styles.upload} ${imageState.imageURL ? styles['upload--change'] : ''}`} onClick={handleImageUpload}>
-                    {imageState.uploading && <div className={styles['upload__progress']}><Spinner size={4} /></div>}
-
-                    <img src={uploadSvg} alt="upload" className={styles['upload__image']} />
-
-                    {!imageState.imageURL && <span className={styles['upload__text']}>+ Upload Image</span>}
-
-                    {imageState.imageURL && <>
-                        <span className={styles['upload__text']}>Change image</span>
-                        <img src={imageState.imageURL} alt="profile" className={styles.profile} />
-                    </>}
-                </div>
+            <div className={styles.upload}>
+                <ProfilePictureUpload imageState={imageState} handleImageUpload={handleImageUpload}></ProfilePictureUpload>
 
                 <p className={styles.note}>Image must be below 1024x1024px. Use PNG or JPG format.</p>
 
@@ -105,7 +94,6 @@ const ProfilePicture = () => {
                     Error uploading image. Image doesn't meet upload criteria or there was some unknown error.
                 </p>}
             </div>
-
         </div>
     </Card>;
 }

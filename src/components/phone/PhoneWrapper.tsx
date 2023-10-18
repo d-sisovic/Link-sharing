@@ -1,16 +1,15 @@
 import Phone from "./Phone";
+import { useMemo } from "react";
 import styles from "./PhoneWrapper.module.scss";
 import { IBaseProp } from "../../ts/models/base-prop.model";
 
 const PhoneWrapper = ({ children }: IBaseProp) => {
-    return <div className={styles.container}>
-        <div className={styles['container__phone']}>
-            <Phone />
-        </div>
+    const PhoneMemo = useMemo(() => <Phone />, []);
 
-        <div className={styles['container__body']}>
-            {children}
-        </div>
+    return <div className={styles.container}>
+        <div className={styles['container__phone']}>{PhoneMemo}</div>
+
+        <div className={styles['container__body']}>{children}</div>
     </div>;
 }
 

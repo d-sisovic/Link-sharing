@@ -5,11 +5,10 @@ import Button from "../../ui/components/button/Button";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
-
   const onGoBack = () => navigate(-1);
 
   return <LoginWrapper>
-    <div className={styles['center']}>
+    <div className={styles.container}>
       <h1 className="title">Page not found</h1>
       <h3 className="subtitle">The page you requested is not found. Please check URL and try again.</h3>
 
