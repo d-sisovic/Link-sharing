@@ -11,7 +11,7 @@ const ErrorBoundaryComponent = () => {
     return <LoginWrapper>
         <div className={styles.container}>
             <h1 className="title">Unexpected Error</h1>
-            <h3 className="subtitle">Please contact developer at: <b>siskoftn@gmail.com</b></h3>
+            <h3 className="subtitle">Please contact developer at: <b>d.sisovic777@gmail.com</b></h3>
 
             <Button label="Go to login" clickHandler={goToLogin} />
         </div>
