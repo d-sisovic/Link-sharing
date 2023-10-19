@@ -14,10 +14,10 @@ import { RoutePaths } from './ts/enums/rout-paths.enum';
 import Dashboard from './components/dashboard/Dashboard';
 import PrivateRoute from './components/private-route/PrivateRoute';
 import NotFoundPage from './components/not-found-page/NotFoundPage';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { RouterProvider, createHashRouter } from 'react-router-dom';
 import ErrorBoundaryComponent from './ui/components/error-boundary/ErrorBoundaryComponent';
 
-const router = createBrowserRouter([
+const routes = [
   {
     element: <ErrorBoundary fallback={<ErrorBoundaryComponent />}><App /></ErrorBoundary>,
     children: [
@@ -50,7 +50,9 @@ const router = createBrowserRouter([
     ],
     errorElement: <NotFoundPage />
   }
-]);
+];
+
+const router = createHashRouter(routes);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
