@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://d-sisovic.github.io/Link-sharing/#",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
