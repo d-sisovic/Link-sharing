@@ -55,6 +55,8 @@ Users should be able to:
 - [react-toastify](https://www.npmjs.com/package/react-toastify) - For UI notifications/npm library
 - [react-router-dom](https://www.npmjs.com/package/react-router-dom) - For managing router state/npm library
 
+- Unit and end-to-end testing are to be done!
+
 ### Useful resources
 
 - [Firebase CRUD](https://softauthor.com/firebase-firestore-add-document-data-using-setdoc/) - This helped me to get into the touch with Firebase v9 API calls.
