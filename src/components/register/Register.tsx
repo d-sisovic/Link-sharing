@@ -86,7 +86,6 @@ const Register = () => {
         validate: (value: string) => value !== getValues().password ? "Passwords must match" : null
     }), [getValues]);
 
-
     /**
      * Memoized email field variables.
      */
@@ -98,7 +97,6 @@ const Register = () => {
 
     const EmailFieldMemo = useMemo(() => <Input inputAttribute={emailInputAttribute}
         inputForm={EmailInputFormMemo} children={EmailChildrenMemo} />, [EmailChildrenMemo, EmailInputFormMemo]);
-
 
     /**
      * Memoized password field variables.
@@ -112,7 +110,6 @@ const Register = () => {
     const PasswordFieldMemo = useMemo(() => <Input inputAttribute={passwordInputAttribute}
         inputForm={PasswordInputFormMemo} children={PasswordChildrenMemo} />,
         [PasswordInputFormMemo, PasswordChildrenMemo]);
-
 
     /**
     * Memoized confirm password field variables.

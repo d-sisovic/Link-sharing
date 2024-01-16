@@ -6,7 +6,7 @@ const SelectOptions = ({ options, activeOption, onChange, onSelectOption }: ISel
         {options.map((option, index) => {
             const selected = option.value === activeOption;
 
-            return <li className={styles["container__item"]} key={index} onClick={() => onSelectOption(onChange, option.value)}>
+            return <li className={styles["container__item"]} key={index} onClick={() => onSelectOption(onChange, option.value)} data-testid="option">
                 <div className={`${styles["container__item__content"]} ${selected ? styles["container__item__content--selected"] : ""}`}>
                     <img src={option.img} alt="option-img" />
                     <span>{option.label} {selected ? " (Selected)" : ""}</span>

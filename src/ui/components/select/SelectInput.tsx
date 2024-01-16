@@ -6,9 +6,9 @@ import { useClickedOutside } from "../../../hooks/use-clicked-outside";
 
 const SelectInput = ({ dropdownVisible, activeItem, setDropdownVisible, onToggleExpand }: ISelectInput) => {
     const { ref } = useClickedOutside(setDropdownVisible);
-   
+
     return <div className={`${styles.container} ${dropdownVisible ? styles['container--expanded'] : ''}`}
-        onClick={onToggleExpand} ref={ref as LegacyRef<HTMLDivElement>}>
+        onClick={onToggleExpand} ref={ref as LegacyRef<HTMLDivElement>} data-testid="select-input">
         <div className={styles['container__value']}>
             {activeItem && <>
                 <img src={activeItem.img} alt="link" />
@@ -17,7 +17,7 @@ const SelectInput = ({ dropdownVisible, activeItem, setDropdownVisible, onToggle
             </>}
         </div>
 
-        <img src={chevronDown} alt="arrow" className={dropdownVisible ? styles['chevron--up'] : ''} />
+        <img src={chevronDown} alt="arrow" className={dropdownVisible ? styles['chevron--up'] : ''} data-testid="chevron" />
     </div>;
 }
 

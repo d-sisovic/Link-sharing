@@ -3,7 +3,7 @@ import { IInputAttribute } from "./input-attribute.model";
 
 export interface IInput {
     inputForm: IInputForm;
-    children: React.ReactNode;
+    children?: React.ReactNode;
     expandRowDesktop?: boolean;
     inputAttribute: IInputAttribute;
 }

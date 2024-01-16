@@ -34,7 +34,7 @@ const Select = ({ active, label, options, name, control }: ISelect) => {
             {SelectInputMemo}
 
             {dropdownVisible && <SelectOptions options={options} activeOption={activeOption}
-                onChange={onChange} onSelectOption={onSelectOption}></SelectOptions>}
+                onChange={onChange} onSelectOption={onSelectOption} />}
         </div>
     )} />;
 }

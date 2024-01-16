@@ -11,7 +11,8 @@ const Button = ({ disabled = false, outlineMode = false, label, clickHandler }: 
     clickHandler();
   };
 
-  return <button className={`${styles['button']} ${disabledStyle} ${outlineStyle}`} onClick={handleButtonClick} disabled={disabled}>
+  return <button className={`${styles['button']} ${disabledStyle} ${outlineStyle}`}
+    disabled={disabled} data-testid="button" onClick={handleButtonClick}>
     {label}
   </button>
 }

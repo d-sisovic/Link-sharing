@@ -11,7 +11,8 @@ const InputField = ({ children, expandRowDesktop, inputAttribute, inputForm }: I
     return <div className={`${styles.container} ${invalidStyle} ${rowStyle}`}>
         <span className={styles['container__icon']}>{children}</span>
 
-        <input type={type} placeholder={placeholder} {...register(name, validationSchema)} className={`${!children ? styles['container--iconless'] : ''}`} />
+        <input type={type} placeholder={placeholder} {...register(name, validationSchema)}
+            className={`${!children ? styles['container--iconless'] : ''}`} data-testid='test-input' />
 
         {errors && <span className={styles['container__error']}>{errors.message}</span>}
     </div>
