@@ -91,7 +91,7 @@ const Login = () => {
     return <>
       {ToastrMemo}
 
-      <h1 className="title">Login</h1>
+      <h1 className="title" data-testid="login-title">Login</h1>
 
       <h3 className="subtitle">Add your details below to get back into the app</h3>
 

@@ -40,7 +40,7 @@ const Dashboard = () => {
       <img src={desktopLogo} className={styles['nav__logo--desktop']} alt="desktop__logo" />
 
       <div className={styles.subgrid}>
-        <NavLink to={RoutePaths.LINK} className={({ isActive }) => `${styles['subgrid__link']} ${isActive ? styles['subgrid__link--active'] : ''}`}>
+        <NavLink to={RoutePaths.LINK} className={({ isActive }) => `${styles['subgrid__link']} ${isActive ? styles['subgrid__link--active'] : ''}`} data-testid="link-nav">
           <img src={link} alt="link" />
 
           <span className={styles['subgrid__link__label']}>Links</span>

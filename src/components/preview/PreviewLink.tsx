@@ -12,7 +12,7 @@ const PreviewLink = ({ link, previewMode }: { link: IFirebaseLink; previewMode: 
     return (<div className={`${styles.container} ${previewMode ? styles['container--preview'] : ""}`} style={{ background }} onClick={handleLinkClick}>
         <div>
             <img src={img} alt="link-image" className={styles['container__image']} />
-            <span>{label}</span>
+            <span data-testid="platform-label">{label}</span>
         </div>
 
         <img src={arrowRightSvg} alt="arrow-right" />
